@@ -2,7 +2,7 @@
 
 int client(char *ipVersion, char *addr, char *port)
 {
-    printf("IP: %s, ADDRESS: %s, PORT: %s\n", ipVersion, addr, port);
+    printf("IPver: %s, ADDRESS: %s, PORT: %s\n", ipVersion, addr, port);
 /* IPVERSION NOT IMPLEMENTED, ipv4 only now */
     int cliSockfd = -1;
     struct sockaddr_in servaddr = {}, cliaddr = {}; /* change for ipv6 */
