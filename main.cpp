@@ -1,0 +1,21 @@
+#include <stdlib.h> // EXIT_FAILURE
+
+#include "server.h"
+#include "client.h"
+
+int main(int argc, char *argv[])
+{
+    if (argc > 1) {
+        if (!strcmp(argv[1], "server")) {
+            server();
+        }
+        else if (argc > 4 && !strcmp(argv[1], "client")) {
+            client(argv[2], argv[3], argv[4]);
+        }
+    }
+    else {
+        printf("Arguments needed: server OR client IPv4/IPv6 IP_ADDRESS PORT\n");
+        exit(EXIT_FAILURE);
+    }    
+    return 0;
+}

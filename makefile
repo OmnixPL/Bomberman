@@ -1,5 +1,8 @@
-CC=gcc
-CFLAGS=-I.
+CC=g++
+CFLAGS=-I ./boost_1_49_0
 
-make: main.o
-	$(CC) -o main main.o
+# for every foo.o rule perform g++ 
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $< 
+make: main.o server.o client.o
+	$(CC) $(CFLAGS) -o main main.o server.o client.o
