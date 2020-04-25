@@ -2,13 +2,24 @@
 
 #include "server.h"
 #include "client.h"
-#include "packets/packets.h"
+#include "packets.h"
 
 int main(int argc, char *argv[])
 {
-    std::string string = "papiez";
-    PacketAck packet(LOBBY, 3, string, 4);
-    //Packet packet(ACK, 3, "papiez"); 
+    Packet::userDefault = "papiez";
+
+    std::string pass = "okon";
+    PacketAuth auth(pass);
+    
+    PacketAck ack(auth.getNo());
+    
+    PacketRdy rdy(true);
+
+    PacketAns ans(FULL);
+
+    std::vector<std::string> players = { Packet::userDefault, "Jan", "Paweł", "Karol" };
+    std::vector<bool> rdystatus = {0, 0, 0, 1};
+    PacketLobby lobby(players, rdystatus);
 
     if (argc > 1) {
         if (!strcmp(argv[1], "server")) {
