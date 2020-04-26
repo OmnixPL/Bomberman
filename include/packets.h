@@ -27,7 +27,8 @@ class Packet {
         static std::string userDefault;
         Packet(packet_t type, const std::string& user = "");
         int getNo() { return no; };
-        int setUserDefault(std::string u) { userDefault = u; };
+        std::string getUser() { return user; };
+        void setUserDefault(std::string u) { userDefault = u; };
 };
 
 class PacketAck : public Packet {

@@ -1,6 +1,6 @@
 #include <stdlib.h> // EXIT_FAILURE
 
-#include "server.h"
+#include "include/server.h"
 #include "client.h"
 #include "packets.h"
 
@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 
     std::string pass = "okon";
     PacketAuth auth(pass);
+    //PacketAuth auth2(pass, pass);
     
     PacketAck ack(auth.getNo());
     
