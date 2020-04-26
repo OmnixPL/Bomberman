@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
+#include <server.h>
  
 TEST(SquareRootTest, PositiveNos) { 
-    ASSERT_EQ(6, 3+3);
+    Server server = Server(4200);
+    server.test();
 }
  
 int main(int argc, char **argv) {

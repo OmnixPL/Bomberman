@@ -10,10 +10,10 @@ GOOGLE_TEST_LIB = gtest
 G++FLAGS = -g3 -Wall -I $(INCLUDE_PATH)
 LD_FLAGS = -L ./lib -l $(GOOGLE_TEST_LIB) -l pthread
 
-TARGETS = main test
-OBJECTS = server.o client.o packets.o
-MAIN_OBJECTS = main.o $(OBJECTS)
-TEST_OBJECTS = test.o $(OBJECTS)
+TARGETS= main test
+OBJECTS= server.o client.o packets.o
+MAIN_OBJECTS= main.o $(OBJECTS)
+TEST_OBJECTS= test.o $(OBJECTS)
 
 # for every foo.o rule perform g++ 
 %.o: %.cpp
@@ -24,7 +24,7 @@ main: $(MAIN_OBJECTS)
 	$(G++) $(G++FLAGS) -o $@ $(MAIN_OBJECTS)
 
 test: $(TEST_OBJECTS)
-	$(G++) -o $@ $< $(LD_FLAGS)
+	$(G++) -o $@ $(TEST_OBJECTS) $(LD_FLAGS)
 
 all: $(TARGETS)
 
