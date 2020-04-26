@@ -7,8 +7,20 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <vector>
 
 #define SERV_PORT 57312
 #define BUFFERSZ 256
 
-int server();
+class Server {
+    private:
+        int servSockfd = -1;
+        sockaddr_in6 cliaddr = {}; // maybe change client to sockaddr_storage
+        sockaddr_in6 servaddr = {};
+        socklen_t len = sizeof(cliaddr);
+
+
+    public:
+        Server(int port);
+        int test();
+};

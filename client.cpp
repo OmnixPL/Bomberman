@@ -1,29 +1,20 @@
 #include "client.h"
 
-int client(char *ipVersion, char *addr, char *port)
-{
-    printf("IPver: %s, ADDRESS: %s, PORT: %s\n", ipVersion, addr, port);
-/* IPVERSION NOT IMPLEMENTED, ipv4 only now */
-    int cliSockfd = -1;
-    struct sockaddr_in servaddr = {}, cliaddr = {}; /* change for ipv6 */
-    socklen_t len = sizeof(servaddr);
+Client::Client(int version, char* addr, int port) {
+    servaddr.sin6_family = AF_INET6; /* change for ipv6 */
+    inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
+    servaddr.sin6_port = htons(port);
+
+    if ((cliSockfd = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
+        perror("socket creation failed");
+        return;
+    }
+}
+
+int Client::test() {
     int readCount;
     char buffer[BUFFERSZ];
     char msg[] = "Dzien dobry.";
-
-    servaddr.sin_family = AF_INET; /* change for ipv6 */
-    inet_pton(AF_INET, addr, &servaddr.sin_addr);
-    servaddr.sin_port = htons(atoi(port));
-
-    if ((cliSockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) { /* change for ipv6 */
-        perror("socket creation failed");
-        exit(EXIT_FAILURE); 
-    }
-/*
-    if (bind(cliSockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ) { 
-        perror("binding failed"); 
-        exit(EXIT_FAILURE); 
-    } */
 
     sendto(cliSockfd, (const char *)msg, strlen(msg), 0, (const struct sockaddr *) &servaddr, len); 
     printf("Hello message sent.\n");

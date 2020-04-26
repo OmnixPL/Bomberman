@@ -1,31 +1,29 @@
 #include "server.h"
 
-int server()
-{
-    int servSockfd = -1;
-    struct sockaddr_in servaddr = {}, cliaddr = {}; // maybe change client to sockaddr_storage
-    socklen_t len = sizeof(cliaddr);
-    int readCount;
-    char buffer[BUFFERSZ];
-    char response[] = "Pozdrawiam.";
+Server::Server(int port) {
+    servaddr.sin6_family = AF_INET6;
+    servaddr.sin6_addr = in6addr_any;
+    servaddr.sin6_port = htons(port);
 
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(SERV_PORT);
-
-    if ((servSockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    if ((servSockfd = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
         perror("socket creation failed");
-        exit(EXIT_FAILURE); 
+        return;
     }
 
     if (bind(servSockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ) { 
         perror("binding failed"); 
-        exit(EXIT_FAILURE); 
-    } 
+        return; 
+    }
+}
 
+int Server::test() {
+    int readCount;
+    char buffer[BUFFERSZ];
+    char response[] = "Pozdrawiam.";
+    char ip[80];
     readCount = recvfrom(servSockfd, buffer, BUFFERSZ, 0, (struct sockaddr *) &cliaddr, &len); 
     buffer[readCount] = '\0';
-    printf("Client: %s\n", buffer); 
+    printf("Client IP: %s: MSG: %s\n", inet_ntop(AF_INET6, &cliaddr.sin6_addr, ip, INET6_ADDRSTRLEN), buffer); 
     sendto(servSockfd, (const char *)response, strlen(response), MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len); 
     printf("Hello message sent.\n");
     return 0;

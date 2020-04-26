@@ -23,10 +23,12 @@ int main(int argc, char *argv[])
 
     if (argc > 1) {
         if (!strcmp(argv[1], "server")) {
-            server();
+            Server server(57312);
+            server.test();
         }
         else if (argc > 4 && !strcmp(argv[1], "client")) {
-            client(argv[2], argv[3], argv[4]);
+            Client client(atoi(argv[2]), argv[3], atoi(argv[4]));
+            client.test();
         }
     }
     else {
