@@ -9,7 +9,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define BUFFERSZ 256
+#define BUFFERSZ 512
 
 class Client {
     private:

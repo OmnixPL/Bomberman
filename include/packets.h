@@ -18,16 +18,25 @@ enum packet_t {
 enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT};
 
 class Packet {
-    private:
+    protected:
         static int noCount;
-        const packet_t type;
-        const int no;
+        packet_t type;
+        int no;
         std::string user;
+        int deserialize(char* buffer, size_t len);
     public:
         static std::string userDefault;
+
         Packet(packet_t type, const std::string& user = "");
+        Packet(char* buffer, size_t len);
+        
+        packet_t getType() { return type; };
         int getNo() { return no; };
-        int setUserDefault(std::string u) { userDefault = u; };
+        std::string getUser() { return user; };
+        
+        void setUserDefault(std::string u) { userDefault = u; };
+        
+        int serialize(char* buffer, size_t len);
 };
 
 class PacketAck : public Packet {
@@ -35,6 +44,11 @@ class PacketAck : public Packet {
         int noAck;
     public:
         PacketAck(int noAck, const std::string& user = "");
+        PacketAck(char* buffer, size_t len);
+
+        int getNoAck() { return noAck; };
+
+        int serialize(char* buffer, size_t len);
 };
 
 class PacketAuth : public Packet {
@@ -42,6 +56,10 @@ class PacketAuth : public Packet {
         std::string password;
     public:
         PacketAuth(std::string& password, const std::string& user = "");
+        PacketAuth(char* buffer, size_t len);
+        std::string getPassword() { return password; };
+        
+        int serialize(char* buffer, size_t len);
 };
 
 class PacketRdy : public Packet {
@@ -49,16 +67,22 @@ class PacketRdy : public Packet {
         bool rdy;
     public:
         PacketRdy(bool rdy, const std::string& user = "");
+        PacketRdy(char* buffer, size_t len);
+        bool getRdy() { return rdy; };
+        
+        int serialize(char* buffer, size_t len);
 };
 
 class PacketRenew : public Packet {
     public:
         PacketRenew(const std::string& user = "");
+        PacketRenew(char* buffer, size_t len);
 };
 
 class PacketDisconnect : public Packet {
     public:
         PacketDisconnect(const std::string& user = "");
+        PacketDisconnect(char* buffer, size_t len);
 };
 
 class PacketAns : public Packet {
@@ -66,14 +90,22 @@ class PacketAns : public Packet {
         ans_t ans;
     public:
         PacketAns(ans_t ans, const std::string& user = "");
+        PacketAns(char* buffer, size_t len);
+        
+        ans_t getAns() { return ans; };
+
+        int serialize(char* buffer, size_t len);
 };
 
 class PacketLobby : public Packet {
     private:
+    public:
         std::vector<std::string> players;
         std::vector<bool> rdy;
-    public:
         PacketLobby(std::vector<std::string> players, std::vector<bool> rdy, const std::string& user = "");
+        PacketLobby(char* buffer, size_t len);
+        
+        int serialize(char* buffer, size_t len);
 };
 
 #endif
