@@ -14,6 +14,9 @@ int SessionHandler::addNewClient(in6_addr addr, PacketAuth& auth) {
         std::cout << "Bad password" << std::endl;
         return -3;  // Bad password
     }
+
+    if (auth.getUser().size() > 15)
+        return -4;  // username too long
         
     cs.push_back(tempcs);
 

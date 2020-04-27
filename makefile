@@ -11,7 +11,7 @@ G++FLAGS = -g3 -Wall -I $(INCLUDE_PATH)
 LD_FLAGS = -L ./lib -l $(GOOGLE_TEST_LIB) -l pthread
 
 TARGETS= main test
-OBJECTS= server.o client.o packets.o session.o lobby.o
+OBJECTS= server.o client.o packets.o session.o lobby.o ServerRecv.o
 MAIN_OBJECTS= main.o $(OBJECTS)
 TEST_OBJECTS= test.o $(OBJECTS)
 
