@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "session.h"
+#include "lobby.h"
 
 #define SERV_PORT 57312
 #define BUFFERSZ 256
@@ -23,6 +24,7 @@ class Server {
         std::vector<ClientSession> cs;
         std::string password;
         SessionHandler sh = SessionHandler(cs, password);
+        Lobby lobby = Lobby(cs);
 
     public:
         Server(int port, std::string password = "");

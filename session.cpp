@@ -2,6 +2,7 @@
 
 int SessionHandler::addNewClient(in6_addr addr, PacketAuth& auth) {
     ClientSession tempcs(addr, auth.getUser(), time(NULL));
+    tempcs.rdy = false;
     
     if (cs.size() >= 4)
         return -1;  // Max clients already

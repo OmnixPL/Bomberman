@@ -51,6 +51,7 @@ class PacketRdy : public Packet {
         bool rdy;
     public:
         PacketRdy(bool rdy, const std::string& user = "");
+        bool getRdy() { return rdy; };
 };
 
 class PacketRenew : public Packet {

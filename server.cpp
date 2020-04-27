@@ -36,13 +36,15 @@ int Server::selfTest() {
     PacketAuth xd2(xd3);
     PacketRenew renew;
     PacketDisconnect disc;
-
+    PacketRdy rdy(true);
     std::cout << "Password: >" << password << "<" << std::endl; 
     sh.addNewClient(cliaddr.sin6_addr, xd2);
-    sleep(3);
-    sh.renewClient(cliaddr.sin6_addr, renew);
+    //sleep(3);
+    //sh.renewClient(cliaddr.sin6_addr, renew);
     //sleep(12);
     //sh.checkTimeouts();
-    sh.removeClient(cliaddr.sin6_addr, disc);
+    //sh.removeClient(cliaddr.sin6_addr, disc);
+    lobby.clientReady(cliaddr.sin6_addr, rdy);
+    lobby.isAllReady();
     return 0;
 }
