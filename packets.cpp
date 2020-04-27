@@ -4,7 +4,7 @@
 int Packet::noCount = 0;
 std::string Packet::userDefault = "";
 
-Packet::Packet(packet_t ttype, const std::string& uuser) : type(ttype), no(noCount++) {
+Packet::Packet(packet_t ttype, const std::string& uuser) : type(ttype), no(noCount++), user(uuser) {
     if (uuser == "")
         user = userDefault;
     std::cout << "Packet type: " << type << "  number: " << no << "  from: " << user << std::endl ;
@@ -14,7 +14,7 @@ PacketAck::PacketAck(int nnoAck, const std::string& user) : Packet{ACK, user}, n
     std::cout << "  Acknowledged packet no: " << noAck << std::endl;
 }
 
-PacketAuth::PacketAuth(std::string& ppassword, const std::string& user) : Packet{AUTH, user}, password(ppassword) {
+PacketAuth::PacketAuth(std::string& ppassword, const std::string& uuser) : Packet{AUTH, uuser}, password(ppassword) {
     std::cout << "  Password: " << password << std::endl;
 }
 

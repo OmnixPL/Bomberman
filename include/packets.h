@@ -43,6 +43,7 @@ class PacketAuth : public Packet {
         std::string password;
     public:
         PacketAuth(std::string& password, const std::string& user = "");
+        std::string getPassword() { return password; };
 };
 
 class PacketRdy : public Packet {

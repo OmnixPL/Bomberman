@@ -21,10 +21,12 @@ class Server {
         sockaddr_in6 servaddr = {};
         socklen_t len = sizeof(cliaddr);
         std::vector<ClientSession> cs;
-        SessionHandler sh = SessionHandler(cs);
+        std::string password;
+        SessionHandler sh = SessionHandler(cs, password);
 
     public:
-        Server(int port);
-        int test();
+        Server(int port, std::string password = "");
+        int testConnection();
+        int selfTest();
 };
 

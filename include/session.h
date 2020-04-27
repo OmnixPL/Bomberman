@@ -14,13 +14,16 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <ctime>
 
 #include "packets.h"
 
 struct ClientSession {
     in6_addr addr;
     std::string name;
-    ClientSession(in6_addr aaddr, std::string nname) : addr(aaddr), name(nname) {};
+    time_t lastActive;
+
+    ClientSession(in6_addr aaddr, std::string nname, time_t last = 0) : addr(aaddr), name(nname), lastActive(last) {};
     inline bool operator==(const ClientSession other) { 
         if (other.addr.__in6_u.__u6_addr32[0] == addr.__in6_u.__u6_addr32[0] &&
             other.addr.__in6_u.__u6_addr32[1] == addr.__in6_u.__u6_addr32[1] &&
@@ -32,23 +35,13 @@ struct ClientSession {
 class SessionHandler {
     private:
         std::vector<ClientSession>& cs;
+        std::string& password;
     public:
-        SessionHandler(std::vector<ClientSession>& ccs) : cs(ccs) {};
+        SessionHandler(std::vector<ClientSession>& ccs, std::string& ppassword) : cs(ccs), password(ppassword) {};
         int addNewClient(in6_addr addr, PacketAuth& auth);
+        int renewClient(in6_addr addr, Packet& packet);
+        int checkTimeouts();
+        int removeClient(in6_addr addr, PacketDisconnect& disc);
 };
-
-int SessionHandler::addNewClient(in6_addr addr, PacketAuth& auth) {
-    ClientSession tempcs(addr, auth.getUser());
-    
-    if (cs.size() >= 4)
-        return -1;
-    
-    if (std::find(cs.begin(), cs.end(), tempcs) != cs.end())
-        return -2;
-
-    cs.push_back(tempcs);
-    std::cout << "Added new client: " << tempcs.name << std::endl;
-    return 0;
-}
 
 #endif

@@ -7,14 +7,14 @@
 int main(int argc, char *argv[])
 {
     Packet::userDefault = "papiez";
-
+    std::string pls = "pls";
     std::string pass = "okon";
-    PacketAuth auth(pass);
+    PacketAuth auth(pass, pls);
     //PacketAuth auth2(pass, pass);
     
-    PacketAck ack(auth.getNo());
+    PacketAck ack(auth.getNo(), pls);
     
-    PacketRdy rdy(true);
+    PacketRdy rdy(true, pls);
 
     PacketAns ans(FULL);
 
@@ -25,11 +25,13 @@ int main(int argc, char *argv[])
     if (argc > 1) {
         if (!strcmp(argv[1], "server")) {
             Server server(57312);
-            server.test();
+            //server.testConnection();
+            server.selfTest();
         }
         else if (argc > 4 && !strcmp(argv[1], "client")) {
             Client client(atoi(argv[2]), argv[3], atoi(argv[4]));
             client.test();
+
         }
     }
     else {
