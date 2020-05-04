@@ -67,7 +67,7 @@ TEST( PacketTest, CreatePacket )
     EXPECT_EQ(p2.getUser(), "default");
 }
 
-TEST( PacketTest, SerializeAndDeserialize )
+TEST( PacketTest, SerializeAndDeserializePacket )
 {
     size_t len = 512;
     char bufferUsed[512];
@@ -86,9 +86,73 @@ TEST( PacketTest, CreateAckPacket )
     int numberUsed = 10;
     PacketAck p1(numberUsed, "");
 
+    EXPECT_EQ(p1.getNoAck(), 10);
     EXPECT_EQ(p1.getType(), packet_t::ACK);
     EXPECT_EQ(p1.getUser(), "default");
+}
 
+TEST( PacketTest, CreateAuthPacket )
+{
+    std::string passwordUsed = "password";
+    const std::string user = "user";
+    PacketAuth p1(passwordUsed, user);
+    
+    ASSERT_EQ(p1.getPassword(), passwordUsed);
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::AUTH);
+}
+
+TEST( PacketTest, CreatePacketRdy )
+{
+    bool isReadyUsed = true;
+    const std::string user = "user";
+    PacketRdy p1(isReadyUsed, user);
+    
+    ASSERT_EQ(p1.getRdy(), isReadyUsed);
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::RDY);
+}
+
+TEST( PacketTest, CreatePacketRenew )
+{
+    const std::string user = "user";
+    PacketRenew p1(user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::RENEW);
+}
+
+TEST( PacketTest, CreatePacketDisconnect )
+{
+    const std::string user = "user";
+    PacketDisconnect p1(user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::DISCONNECT);
+}
+
+TEST( PacketTest, CreatePacketAns )
+{
+    const std::string user = "user";
+    ans_t answerUsed = ans_t::BAD_PASSWORD;
+    PacketAns p1(answerUsed, user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getAns(), answerUsed);
+    ASSERT_EQ(p1.getType(), packet_t::ANS);
+}
+
+TEST( PacketTest, CreatePacketLobby )
+{
+    std::vector<std::string> playersUsed = {"first", "second"};
+    std::vector<bool> readyVectorUsed = {true, true};
+    const std::string user = "user";
+    PacketLobby p1(playersUsed, readyVectorUsed, user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.players, playersUsed);
+    ASSERT_EQ(p1.rdy, readyVectorUsed);
+    ASSERT_EQ(p1.getType(), packet_t::LOBBY);
 }
  
 int main(int argc, char **argv) {
