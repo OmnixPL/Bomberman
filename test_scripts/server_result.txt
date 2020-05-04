@@ -1,0 +1,47 @@
+Packet type: 1  number: 0  from: pls
+  Password: okon
+Packet type: 0  number: 1  from: pls
+  Acknowledged packet no: 0
+Packet type: 2  number: 2  from: pls
+  Ready: 1
+Packet type: 6  number: 3  from: papiez
+  Answer: 2
+Packet type: 7  number: 4  from: papiez
+  Player1: papiez rdy: 0
+  Player2: Jan rdy: 0
+  Player3: Paweł rdy: 0
+  Player4: Karol rdy: 1
+Client IP: ::1 MSG: Dzien dobry.
+Hello message sent.
+Incoming packet type: 8
+User: TUTU
+NO: 5
+
+Incoming packet type: 0
+User: TUTU
+NO: 6
+noAck: 666
+
+Incoming packet type: 1
+User: TUTU
+NO: 7
+Pass: TESTER
+
+Incoming packet type: 2
+User: TUTU
+NO: 8
+rdy: 1
+
+Incoming packet type: 3
+User: TUTU
+NO: 9
+
+Incoming packet type: 4
+User: TUTU
+NO: 10
+
+Packet type: 6  number: 5  from: papiez
+  Answer: 3
+Packet type: 7  number: 6  from: papiez
+  Player1: Pap rdy: 0
+  Player2: KEK rdy: 1
