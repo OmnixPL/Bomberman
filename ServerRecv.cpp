@@ -5,7 +5,8 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <iostream>
+#include "receiver.h"
 
-void ServerRecv::acceptPackets() {
-    
-}
+
+ServerRecv::ServerRecv(int& sservSockfd, std::vector<Packet>& ppackets) : Receiver(sservSockfd, ppackets){}
+
