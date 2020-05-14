@@ -105,3 +105,22 @@ int Server::selfTest() {
     //lobby.isAllReady();
     return 0;
 }
+
+void Server::test2()
+{
+    int readCount;
+    char buffer[BUFFERSZ];
+    char response[] = "Pozdrawiam.";
+    char ip[INET6_ADDRSTRLEN];
+
+    int i = 10;
+    std::cout<<"Sending 10 packets"<<std::endl;
+    while (i--)
+    {
+        sendto(servSockfd, (const char *)response, strlen(response), MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len); 
+        std::cout<<"Sent packet "<<i<<std::endl;
+    }
+    
+    
+
+}

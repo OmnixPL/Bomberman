@@ -12,6 +12,8 @@ Client::Client(int version, char* addr, int port) {
         perror("socket creation failed");
         return;
     }
+
+    receiver = new ClientReceiver(cliSockfd, addr, port);
 }
 
 int Client::test() {
@@ -73,4 +75,10 @@ int Client::test() {
 
     close(cliSockfd);
     return 0;
+}
+
+void Client::test2()
+{
+    std::cout<<"Client performing test 2"<<std::endl;
+    receiver->serve();
 }

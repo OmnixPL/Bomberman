@@ -8,5 +8,5 @@
 #include "receiver.h"
 
 
-ServerRecv::ServerRecv(int& sservSockfd, std::vector<Packet>& ppackets) : Receiver(sservSockfd, ppackets){}
+ServerRecv::ServerRecv(int& sservSockfd, char* address, int port) : Receiver(sservSockfd, address, port){}
 

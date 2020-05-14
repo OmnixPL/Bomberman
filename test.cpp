@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <server.h>
+#include <client.h>
 
 using namespace std;
 using ::testing::AtLeast;

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     if (argc > 1) {
         if (!strcmp(argv[1], "server")) {
             Server server(57312);
-            server.testConnection();
+            server.test2();
             //server.selfTest();
         }
         else if (argc > 4 && !strcmp(argv[1], "client")) {

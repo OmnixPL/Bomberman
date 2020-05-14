@@ -9,6 +9,6 @@ private:
         // TODO implement
     }
 public:
-    ServerRecv(int& sservSockfd, std::vector<Packet>& ppackets);
+    ServerRecv(int& sservSockfd, char* address, int port);
     ~ServerRecv(){};
 };

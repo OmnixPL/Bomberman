@@ -1,6 +1,6 @@
 #include "clientReceiver.h"
 
-ClientReceiver::ClientReceiver(int& sservSockfd, std::vector<Packet>& ppackets) : Receiver(sservSockfd, ppackets){}
+ClientReceiver::ClientReceiver(int& cliSockfd, char* address, int port) : Receiver(cliSockfd, address, port){}
 
 ClientReceiver::~ClientReceiver()
 {

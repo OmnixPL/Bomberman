@@ -27,11 +27,11 @@ class Server {
         SessionHandler sh = SessionHandler(cs, password);
         Lobby lobby = Lobby(cs);
         std::vector<Packet> packets;
-        ServerRecv sr = ServerRecv(servSockfd, packets);
 
     public:
         Server(int port, std::string password = "");
         int testConnection();
         int selfTest();
+        void test2();
 };
 

@@ -8,7 +8,7 @@ class ClientReceiver : public Receiver
 private:
     void defaultBehaviour();
 public:
-    ClientReceiver(int& sservSockfd, std::vector<Packet>& ppackets);
+    ClientReceiver(int& cliSockfd, char* address, int port);
     ~ClientReceiver();
 };
 
