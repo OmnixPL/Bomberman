@@ -33,5 +33,6 @@ class Server {
         int testConnection();
         int selfTest();
         void test2();
+        void test3();
 };
 

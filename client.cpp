@@ -82,3 +82,15 @@ void Client::test2()
     std::cout<<"Client performing test 2"<<std::endl;
     receiver->serve();
 }
+
+void Client::test3()
+{
+    int readCount;
+    char buffer[BUFFERSZ];
+    char msg[] = "Dzien dobry.";
+    std::string pass = "Pap";
+    sendto(cliSockfd, (const char *)msg, strlen(msg), 0, (const struct sockaddr *) &servaddr, len); 
+    printf("Hello message sent.\n");
+    receiver->serve();
+    
+}

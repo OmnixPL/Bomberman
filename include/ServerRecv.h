@@ -4,7 +4,7 @@
 
 class ServerRecv : public Receiver {
 private:
-    void defaultBehaviour()
+    void defaultBehaviour(char* buffer, size_t len)
     {
         // TODO implement
     }

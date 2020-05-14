@@ -23,6 +23,7 @@ class Client {
         Client(int version, char* addr, int port);
         int test();
         void test2();
+        void test3();
 };
 
 int client(char *ipVersion, char *addr, char *port);

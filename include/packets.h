@@ -29,6 +29,8 @@ class Packet {
 
         Packet(packet_t type, const std::string& user = "");
         Packet(char* buffer, size_t len);
+
+        static packet_t extractType(char* buffer, size_t len);
         
         packet_t getType() { return type; };
         int getNo() { return no; };

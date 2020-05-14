@@ -4,7 +4,9 @@
 #include <iostream>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <functional>
 #include "packets.h"
+
 
 
 class Receiver
@@ -12,8 +14,8 @@ class Receiver
 private:
     int& sockfd;
     std::vector<Packet> packets;
-    std::map<packet_t, int> typeToBehaviour;
-    virtual void defaultBehaviour() = 0;
+    std::map<packet_t, std::function<void(char *, size_t)> > typeToBehaviour;
+    virtual void defaultBehaviour(char* buffer, size_t len) = 0;
     sockaddr_in6 addr;
 public:
     bool isExitRequested = false;

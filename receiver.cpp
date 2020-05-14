@@ -15,15 +15,21 @@ Receiver::~Receiver(){std::cout<<"Whatever";};
 
 void Receiver::serve()
 {
-    int i = 10;
     char buffer[BUFFERSZ];
-    while (i--)
+    int readCount = recvfrom(sockfd, buffer, BUFFERSZ, 0, (struct sockaddr*) &addr, (socklen_t *)sizeof(addr));
+    packet_t typeOfPacketReceived = Packet::extractType(buffer, BUFFERSZ);
+    while (!isExitRequested)
     {
-        int readCount = recvfrom(sockfd, buffer, BUFFERSZ, 0, (struct sockaddr*) &addr, (socklen_t *)sizeof(addr));
-        Packet p(buffer, BUFFERSZ);
-        std::cout << "Incoming packet type: " << p.getType() << std::endl; 
-        std::cout << "User: " << p.getUser() << std::endl;
-        std::cout << "NO: " << p.getNo() << std::endl;
+        // if there's no such type in map, perform default behaviour
+        if(typeToBehaviour.find(typeOfPacketReceived) == typeToBehaviour.end())
+        {
+            defaultBehaviour(buffer, BUFFERSZ);
+        }
+        else
+        {
+            typeToBehaviour[typeOfPacketReceived](buffer, BUFFERSZ);
+        }
     }
+    
     
 }
