@@ -20,7 +20,7 @@ private:
 public:
     bool isExitRequested = false;
     Receiver(int& sockfd, char* address, int port);
-    void serve();
+    void operator()();
     virtual ~Receiver();
 };
 

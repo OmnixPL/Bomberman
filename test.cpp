@@ -2,6 +2,14 @@
 #include <gmock/gmock.h>
 #include <server.h>
 #include <client.h>
+#include <clientReceiver.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#define TEST_PORT 57312
 
 using namespace std;
 using ::testing::AtLeast;
@@ -154,6 +162,31 @@ TEST( PacketTest, CreatePacketLobby )
     ASSERT_EQ(p1.players, playersUsed);
     ASSERT_EQ(p1.rdy, readyVectorUsed);
     ASSERT_EQ(p1.getType(), packet_t::LOBBY);
+}
+
+TEST( ClientTest_1, test)
+{
+
+    Client client(6, "127.0.0.1", TEST_PORT);
+    client.test3();
+
+}
+
+TEST( ClientSenderTest_1, test)
+{
+    char addr[] = "127.0.0.1";
+    sockaddr_in6 servaddr;
+    servaddr.sin6_family = AF_INET6;
+    inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
+    servaddr.sin6_port = htons(TEST_PORT);
+    int cliSockfd;
+    if ((cliSockfd = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
+        perror("socket creation failed");
+        return;
+    }
+
+    ClientSender sender(cliSockfd, addr, TEST_PORT);
+    sender();
 }
  
 int main(int argc, char **argv) {

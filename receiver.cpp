@@ -11,9 +11,9 @@ Receiver::Receiver(int& sockfd, char* address, int port) : sockfd(sockfd)
     addr.sin6_port = htons(port);
 }
 
-Receiver::~Receiver(){std::cout<<"Whatever";};
+Receiver::~Receiver(){std::cout<<"Destroying receiver object";};
 
-void Receiver::serve()
+void Receiver::operator()()
 {
     char buffer[BUFFERSZ];
     int readCount = recvfrom(sockfd, buffer, BUFFERSZ, 0, (struct sockaddr*) &addr, (socklen_t *)sizeof(addr));

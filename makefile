@@ -7,11 +7,11 @@ INCLUDE_PATH = ./include
 LIB_PATH = ./lib
 GOOGLE_TEST_LIB = gtest
 
-G++FLAGS = -std=c++11 -g3 -Wall -I $(INCLUDE_PATH)
-LD_FLAGS = -std=c++11 -L ./lib -l $(GOOGLE_TEST_LIB) -lgmock -l pthread
+G++FLAGS = -std=c++11 -g3 -Wall -I $(INCLUDE_PATH) -pthread
+LD_FLAGS = -std=c++11 -L ./lib -l $(GOOGLE_TEST_LIB) -lgmock -pthread
 
 TARGETS= main test
-OBJECTS= server.o client.o packets.o session.o lobby.o ServerRecv.o receiver.o clientReceiver.o
+OBJECTS= server.o client.o packets.o session.o lobby.o ServerRecv.o receiver.o clientReceiver.o clientSender.o
 MAIN_OBJECTS= main.o $(OBJECTS)
 TEST_OBJECTS= test.o $(OBJECTS)
 

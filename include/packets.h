@@ -23,7 +23,7 @@ class Packet {
         packet_t type;
         int no;
         std::string user;
-        int deserialize(char* buffer, size_t len);
+        virtual int deserialize(char* buffer, size_t len);
     public:
         static std::string userDefault;
 
@@ -38,7 +38,7 @@ class Packet {
         
         void setUserDefault(std::string u) { userDefault = u; };
         
-        int serialize(char* buffer, size_t len);
+        virtual int serialize(char* buffer, size_t len);
 };
 
 class PacketAck : public Packet {

@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 
 #include "clientReceiver.h"
+#include "clientSender.h"
 
 #define BUFFERSZ 512
 
@@ -19,11 +20,14 @@ class Client {
         sockaddr_in6 servaddr = {}, cliaddr = {};
         socklen_t len = sizeof(servaddr);
         ClientReceiver * receiver;
+        ClientSender * sender;
     public:
         Client(int version, char* addr, int port);
         int test();
         void test2();
         void test3();
+        void test4();
+        void test5();
 };
 
 int client(char *ipVersion, char *addr, char *port);

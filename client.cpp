@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 
 #include "client.h"
 #include "include/packets.h"
@@ -14,6 +15,7 @@ Client::Client(int version, char* addr, int port) {
     }
 
     receiver = new ClientReceiver(cliSockfd, addr, port);
+    sender = new ClientSender(cliSockfd, addr, port);
 }
 
 int Client::test() {
@@ -80,7 +82,7 @@ int Client::test() {
 void Client::test2()
 {
     std::cout<<"Client performing test 2"<<std::endl;
-    receiver->serve();
+    (*receiver)();
 }
 
 void Client::test3()
@@ -91,6 +93,18 @@ void Client::test3()
     std::string pass = "Pap";
     sendto(cliSockfd, (const char *)msg, strlen(msg), 0, (const struct sockaddr *) &servaddr, len); 
     printf("Hello message sent.\n");
-    receiver->serve();
+    (*receiver)();
     
+}
+
+void Client::test4()
+{
+    (*sender)();
+    // receiver->serve();
+}
+
+void Client::test5()
+{
+    std::thread threadObj( *sender );
+    threadObj.join();
 }
