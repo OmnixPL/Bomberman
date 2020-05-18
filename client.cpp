@@ -1,10 +1,13 @@
 #include <iostream>
 #include <thread>
+#include <mutex>
 
 #include "client.h"
 #include "include/packets.h"
 
-Client::Client(int version, char* addr, int port) {
+std::mutex globalMutex;
+
+Client::Client(int version, char* addr, int port, std::string filepath) {
     servaddr.sin6_family = AF_INET6; /* change for ipv6 */
     inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
     servaddr.sin6_port = htons(port);
@@ -18,7 +21,8 @@ Client::Client(int version, char* addr, int port) {
     }
 
     receiver = new ClientReceiver(cliSockfd, addr, port, timeout);
-    sender = new ClientSender(cliSockfd, addr, port);
+    sender = new ClientSender(cliSockfd, addr, port, globalMutex);
+    controller = new Controller(filepath, sender);
 }
 
 int Client::test() {

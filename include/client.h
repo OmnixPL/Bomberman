@@ -11,6 +11,7 @@
 
 #include "clientReceiver.h"
 #include "clientSender.h"
+#include <controller.h>
 
 #define BUFFERSZ 512
 
@@ -21,9 +22,10 @@ class Client {
         socklen_t len = sizeof(servaddr);
         ClientReceiver * receiver;
         ClientSender * sender;
+        Controller * controller;
         struct timeval timeout;
     public:
-        Client(int version, char* addr, int port);
+        Client(int version, char* addr, int port, std::string filepath);
         int test();
         void test2();
         void test3();

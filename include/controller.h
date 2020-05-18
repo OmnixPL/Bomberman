@@ -2,25 +2,20 @@
 #define CONTROLLER_H
 
 #include <fstream>
+#include <model.h>
+#include <clientSender.h>
 
 class Controller
 {
 private:
     bool isExitRequested;
     std::ifstream inputFile;
+    Model * model;
+    ClientSender * sender;
 public:
-    Controller(std::string filepath);
+    Controller(std::string filepath, ClientSender * sender);
     ~Controller();
     void operator()();
 };
-
-Controller::Controller(std::string filepath) : inputFile(filepath, std::ifstream::in)
-{
-}
-
-Controller::~Controller()
-{
-}
-
 
 #endif // CONTROLLER_H
