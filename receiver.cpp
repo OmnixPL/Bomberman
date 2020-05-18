@@ -4,7 +4,9 @@
 #include "receiver.h"
 #include "client.h"
 
-Receiver::Receiver(int& sockfd, char* address, int port) : sockfd(sockfd)
+Receiver::Receiver(int& sockfd, char* address, int port, struct timeval timeout) : 
+    sockfd(sockfd), 
+    timeout(timeout)
 {
     addr.sin6_family = AF_INET6;
     inet_pton(AF_INET6, address, &addr.sin6_addr);

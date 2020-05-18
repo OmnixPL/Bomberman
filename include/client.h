@@ -21,6 +21,7 @@ class Client {
         socklen_t len = sizeof(servaddr);
         ClientReceiver * receiver;
         ClientSender * sender;
+        struct timeval timeout;
     public:
         Client(int version, char* addr, int port);
         int test();

@@ -9,6 +9,6 @@ private:
         // TODO implement
     }
 public:
-    ServerRecv(int& sservSockfd, char* address, int port);
+    ServerRecv(int& sservSockfd, char* address, int port, struct timeval timeout);
     ~ServerRecv(){};
 };

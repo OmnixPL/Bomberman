@@ -17,9 +17,11 @@ private:
     std::map<packet_t, std::function<void(char *, size_t)> > typeToBehaviour;
     virtual void defaultBehaviour(char* buffer, size_t len) = 0;
     sockaddr_in6 addr;
+    struct timeval timeout;
 public:
     bool isExitRequested = false;
-    Receiver(int& sockfd, char* address, int port);
+    Receiver(int& sockfd, char* address, int port, struct timeval timeout);
+    
     void operator()();
     virtual ~Receiver();
 };

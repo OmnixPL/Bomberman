@@ -8,5 +8,5 @@
 #include "receiver.h"
 
 
-ServerRecv::ServerRecv(int& sservSockfd, char* address, int port) : Receiver(sservSockfd, address, port){}
+ServerRecv::ServerRecv(int& sservSockfd, char* address, int port, struct timeval timeout) : Receiver(sservSockfd, address, port, timeout){}
 

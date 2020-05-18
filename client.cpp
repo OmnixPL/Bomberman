@@ -9,12 +9,15 @@ Client::Client(int version, char* addr, int port) {
     inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
     servaddr.sin6_port = htons(port);
 
+    timeout.tv_sec = 2 * 60; // 2 min timeout for socket
+    timeout.tv_usec = 0;
+
     if ((cliSockfd = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
         perror("socket creation failed");
         return;
     }
 
-    receiver = new ClientReceiver(cliSockfd, addr, port);
+    receiver = new ClientReceiver(cliSockfd, addr, port, timeout);
     sender = new ClientSender(cliSockfd, addr, port);
 }
 
@@ -106,5 +109,7 @@ void Client::test4()
 void Client::test5()
 {
     std::thread threadObj( *sender );
+    std::thread receiverThread( *receiver );
     threadObj.join();
+    receiverThread.join();
 }

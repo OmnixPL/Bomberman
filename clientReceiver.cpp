@@ -1,6 +1,6 @@
 #include "clientReceiver.h"
 
-ClientReceiver::ClientReceiver(int& cliSockfd, char* address, int port) : Receiver(cliSockfd, address, port){}
+ClientReceiver::ClientReceiver(int& cliSockfd, char* address, int port, struct timeval timeout) : Receiver(cliSockfd, address, port, timeout){}
 
 ClientReceiver::~ClientReceiver()
 {
