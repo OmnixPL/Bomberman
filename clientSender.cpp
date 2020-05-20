@@ -10,7 +10,7 @@ ClientSender::ClientSender(int& sockfd, char* address, int port, std::mutex & mu
 
 ClientSender::~ClientSender()
 {
-    std::cout<<"Destroying ClientSender object";
+    std::cout<<"Destroying ClientSender object"<<std::endl;
 }
 
 void ClientSender::operator()()
@@ -19,10 +19,10 @@ void ClientSender::operator()()
 
     while (!packets.empty())
     {
-        // Packet * p = popFromQueue();
-        Packet * p = packets.front();
+        Packet * p = popFromQueue();
+        // Packet * p = packets.front();
         sendToServer(*p);
-        packets.pop();
+        // packets.pop();
     }
     
 }
@@ -51,5 +51,4 @@ Packet* ClientSender::popFromQueue()
     packets.pop();
     return result;
 }
-
 

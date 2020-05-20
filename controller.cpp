@@ -52,9 +52,10 @@ void Controller::operator()()
     
 }
 
-Controller::Controller(std::string filepath, ClientSender * sender) : 
+Controller::Controller(std::string filepath, ClientSender * sender, Model * model) : 
     inputFile(filepath, std::ifstream::in),
-    sender(sender)
+    sender(sender),
+    model(model)
 {
 }
 

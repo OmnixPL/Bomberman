@@ -23,7 +23,9 @@ class Client {
         ClientReceiver * receiver;
         ClientSender * sender;
         Controller * controller;
+        Model * model;
         struct timeval timeout;
+        std::mutex queueMutex;
     public:
         Client(int version, char* addr, int port, std::string filepath);
         int test();
@@ -33,4 +35,4 @@ class Client {
         void test5();
 };
 
-int client(char *ipVersion, char *addr, char *port);
+// int client(char *ipVersion, char *addr, char *port);

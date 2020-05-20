@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         }
         else if (argc > 4 && !strcmp(argv[1], "client")) {
             Client client(atoi(argv[2]), argv[3], atoi(argv[4]), argv[5]);
-            client.test5();
+            client.test4();
         }
     }
     else {

@@ -5,7 +5,7 @@
 #include "client.h"
 #include "include/packets.h"
 
-std::mutex globalMutex;
+
 
 Client::Client(int version, char* addr, int port, std::string filepath) {
     servaddr.sin6_family = AF_INET6; /* change for ipv6 */
@@ -21,8 +21,9 @@ Client::Client(int version, char* addr, int port, std::string filepath) {
     }
 
     receiver = new ClientReceiver(cliSockfd, addr, port, timeout);
-    sender = new ClientSender(cliSockfd, addr, port, globalMutex);
-    controller = new Controller(filepath, sender);
+    sender = new ClientSender(cliSockfd, addr, port, queueMutex);
+    model = new Model("todo_implement");
+    controller = new Controller(filepath, sender, model);
 }
 
 int Client::test() {
@@ -106,7 +107,8 @@ void Client::test3()
 
 void Client::test4()
 {
-    (*sender)();
+    std::thread th(*sender);
+    th.join();
     // receiver->serve();
 }
 

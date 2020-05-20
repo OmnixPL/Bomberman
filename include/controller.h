@@ -13,7 +13,7 @@ private:
     Model * model;
     ClientSender * sender;
 public:
-    Controller(std::string filepath, ClientSender * sender);
+    Controller(std::string filepath, ClientSender * sender, Model * model);
     ~Controller();
     void operator()();
 };
