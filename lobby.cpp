@@ -1,6 +1,6 @@
 #include "lobby.h"
 
-int Lobby::clientReady(in6_addr addr, PacketRdy& rdy) {
+int Lobby::clientReady(sockaddr_in6 addr, PacketRdy& rdy) {
     ClientSession tempcs(addr, rdy.getUser());
     std::vector<ClientSession>::iterator it; 
 
@@ -8,6 +8,7 @@ int Lobby::clientReady(in6_addr addr, PacketRdy& rdy) {
         return -1;  // Client doesn't exist
 
     it->rdy = rdy.getRdy();
+    std::cout << "Client: " << rdy.getUser() << " is ready: " << rdy.getRdy() << std::endl;
     return 0;
 }
 

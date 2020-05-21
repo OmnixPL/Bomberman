@@ -50,7 +50,7 @@ packet_t Packet::extractType(char* buffer, size_t len)
         throw std::invalid_argument(std::string("buffer too short"));
     }
     packet_t result;
-    memcpy(buffer, &result, sizeof(result));
+    memcpy(&result, buffer, sizeof(result));
     return result;
 }
 

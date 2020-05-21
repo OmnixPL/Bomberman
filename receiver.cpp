@@ -18,7 +18,7 @@ Receiver::~Receiver(){std::cout<<"Destroying receiver object";};
 void Receiver::operator()()
 {
     char buffer[BUFFERSZ];
-    int readCount = recvfrom(sockfd, buffer, BUFFERSZ, 0, (struct sockaddr*) &addr, (socklen_t *)sizeof(addr));
+    recvfrom(sockfd, buffer, BUFFERSZ, 0, (struct sockaddr*) &addr, (socklen_t *)sizeof(addr));
     packet_t typeOfPacketReceived = Packet::extractType(buffer, BUFFERSZ);
     while (!isExitRequested)
     {

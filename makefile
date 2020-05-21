@@ -7,11 +7,11 @@ INCLUDE_PATH = ./include
 LIB_PATH = ./lib
 GOOGLE_TEST_LIB = gtest
 
-G++FLAGS = -std=c++11 -g3 -Wall -I $(INCLUDE_PATH) -pthread
-LD_FLAGS = -std=c++11 -L ./lib -l $(GOOGLE_TEST_LIB) -lgmock -pthread
+G++FLAGS = -std=c++14 -g3 -Wall -I $(INCLUDE_PATH) -pthread
+LD_FLAGS = -std=c++14 -L ./lib -l $(GOOGLE_TEST_LIB) -lgmock -pthread
 
 TARGETS= main test
-OBJECTS= server.o client.o packets.o session.o lobby.o ServerRecv.o receiver.o clientReceiver.o clientSender.o controller.o
+OBJECTS= server.o client.o packets.o session.o lobby.o ServerRecv.o receiver.o clientReceiver.o clientSender.o controller.o serverSender.o
 MAIN_OBJECTS= main.o $(OBJECTS)
 TEST_OBJECTS= test.o $(OBJECTS)
 
@@ -29,4 +29,4 @@ test: $(TEST_OBJECTS)
 all: $(TARGETS)
 
 clean:
-	rm main.o test.o $(OBJECTS) $(TARGETS)
+	rm -f main.o test.o $(OBJECTS) $(TARGETS)

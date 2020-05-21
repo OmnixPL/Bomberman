@@ -11,12 +11,19 @@ class ClientSender
 {
 private:
     int& sockfd;
-    sockaddr_in6 addr;
+    sockaddr_in6& serverAddr;
+    socklen_t serverLen;
     
     void sendToServer(Packet p);
 public:
     std::queue<Packet> packets;
     ClientSender(int& sockfd, char* address, int port);
+    ClientSender(int& sockfd, sockaddr_in6& serverAddr);
+    int sendAck(int noAck);
+    int sendAuth(std::string password);
+    int sendRdy(bool ready);
+    int sendRenew();
+    int sendDisconnect();
     void operator()();
     ~ClientSender();
 };

@@ -15,7 +15,7 @@ enum packet_t {
     ANS, LOBBY, GAME
 };
 
-enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT};
+enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME};
 
 class Packet {
     protected:
