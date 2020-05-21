@@ -1,3 +1,3 @@
 #!/bin/sh
-.././main server > server_result.txt &
-.././test --gtest_filter=ClientTest_1.* > client_result.txt
+.././test --gtest_filter=IntegrationTests.TestServerLoop > server_result.txt &
+.././test --gtest_filter=IntegrationTests.TestClientLoop > client_result.txt

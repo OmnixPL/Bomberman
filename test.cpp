@@ -164,29 +164,16 @@ TEST( PacketTest, CreatePacketLobby )
     ASSERT_EQ(p1.getType(), packet_t::LOBBY);
 }
 
-TEST( ClientTest_1, test)
+TEST( IntegrationTests, TestServerLoop )
 {
-
-    Client client(6, "127.0.0.1", TEST_PORT);
-    client.test3();
-
+    Server server(TEST_PORT);
+    server.testLoop();
 }
 
-TEST( ClientSenderTest_1, test)
+TEST( IntegrationTests, TestClientLoop )
 {
-    char addr[] = "127.0.0.1";
-    sockaddr_in6 servaddr;
-    servaddr.sin6_family = AF_INET6;
-    inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
-    servaddr.sin6_port = htons(TEST_PORT);
-    int cliSockfd;
-    if ((cliSockfd = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
-        perror("socket creation failed");
-        return;
-    }
-
-    ClientSender sender(cliSockfd, addr, TEST_PORT);
-    sender();
+    Client client(6, "127.0.0.1", TEST_PORT);
+    client.testLoop();
 }
  
 int main(int argc, char **argv) {
