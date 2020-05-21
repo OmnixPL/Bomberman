@@ -15,7 +15,7 @@ enum packet_t {
     ANS, LOBBY, GAME
 };
 
-enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT};
+enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME};
 
 class Packet {
     protected:
@@ -23,12 +23,14 @@ class Packet {
         packet_t type;
         int no;
         std::string user;
-        int deserialize(char* buffer, size_t len);
+        virtual int deserialize(char* buffer, size_t len);
     public:
         static std::string userDefault;
 
         Packet(packet_t type, const std::string& user = "");
         Packet(char* buffer, size_t len);
+
+        static packet_t extractType(char* buffer, size_t len);
         
         packet_t getType() { return type; };
         int getNo() { return no; };
@@ -36,7 +38,7 @@ class Packet {
         
         void setUserDefault(std::string u) { userDefault = u; };
         
-        int serialize(char* buffer, size_t len);
+        virtual int serialize(char* buffer, size_t len);
 };
 
 class PacketAck : public Packet {

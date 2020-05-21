@@ -1,6 +1,15 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <server.h>
+#include <client.h>
+#include <clientReceiver.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#define TEST_PORT 57312
 
 using namespace std;
 using ::testing::AtLeast;
@@ -42,6 +51,7 @@ TEST(HelloWorldTest, BasicMock) {
     MockDB mdb;
     MyDatabase db(mdb);
 
+    EXPECT_CALL(mdb, login("Terminator", "asdf"));
     ON_CALL(mdb, login("Terminator", "asdf")).WillByDefault(Return(1));
 
     // Act
@@ -49,6 +59,121 @@ TEST(HelloWorldTest, BasicMock) {
 
     // Assert
     EXPECT_EQ(retValue, 1);
+}
+
+
+TEST( PacketTest, CreatePacket )
+{
+    Packet::userDefault = "default";
+    
+    Packet p1(packet_t::ACK, "user");
+    Packet p2(packet_t::GAME, "");
+
+    EXPECT_EQ(p1.getType(), packet_t::ACK);
+    EXPECT_EQ(p1.getUser(), "user");
+
+    EXPECT_EQ(p2.getType(), packet_t::GAME);
+    EXPECT_EQ(p2.getUser(), "default");
+}
+
+TEST( PacketTest, SerializeAndDeserializePacket )
+{
+    size_t len = 512;
+    char bufferUsed[512];
+    
+    Packet p2(packet_t::GAME);
+    p2.serialize(bufferUsed, len);
+    Packet p3(bufferUsed, len);
+    
+    EXPECT_EQ(p2.getType(), packet_t::GAME);
+    EXPECT_EQ(p2.getType(), p3.getType());
+}
+
+TEST( PacketTest, CreateAckPacket )
+{
+    Packet::userDefault = "default";
+    int numberUsed = 10;
+    PacketAck p1(numberUsed, "");
+
+    EXPECT_EQ(p1.getNoAck(), 10);
+    EXPECT_EQ(p1.getType(), packet_t::ACK);
+    EXPECT_EQ(p1.getUser(), "default");
+}
+
+TEST( PacketTest, CreateAuthPacket )
+{
+    std::string passwordUsed = "password";
+    const std::string user = "user";
+    PacketAuth p1(passwordUsed, user);
+    
+    ASSERT_EQ(p1.getPassword(), passwordUsed);
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::AUTH);
+}
+
+TEST( PacketTest, CreatePacketRdy )
+{
+    bool isReadyUsed = true;
+    const std::string user = "user";
+    PacketRdy p1(isReadyUsed, user);
+    
+    ASSERT_EQ(p1.getRdy(), isReadyUsed);
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::RDY);
+}
+
+TEST( PacketTest, CreatePacketRenew )
+{
+    const std::string user = "user";
+    PacketRenew p1(user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::RENEW);
+}
+
+TEST( PacketTest, CreatePacketDisconnect )
+{
+    const std::string user = "user";
+    PacketDisconnect p1(user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getType(), packet_t::DISCONNECT);
+}
+
+TEST( PacketTest, CreatePacketAns )
+{
+    const std::string user = "user";
+    ans_t answerUsed = ans_t::BAD_PASSWORD;
+    PacketAns p1(answerUsed, user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.getAns(), answerUsed);
+    ASSERT_EQ(p1.getType(), packet_t::ANS);
+}
+
+TEST( PacketTest, CreatePacketLobby )
+{
+    std::vector<std::string> playersUsed = {"first", "second"};
+    std::vector<bool> readyVectorUsed = {true, true};
+    const std::string user = "user";
+    PacketLobby p1(playersUsed, readyVectorUsed, user);
+    
+    ASSERT_EQ(p1.getUser(), user);
+    ASSERT_EQ(p1.players, playersUsed);
+    ASSERT_EQ(p1.rdy, readyVectorUsed);
+    ASSERT_EQ(p1.getType(), packet_t::LOBBY);
+}
+
+TEST( IntegrationTests, TestServerLoop )
+{
+    Server server(TEST_PORT);
+    server.testLoop();
+}
+
+TEST( IntegrationTests, TestClientLoop )
+{
+    Client client(6, "127.0.0.1", TEST_PORT);
+    client.testLoop();
 }
  
 int main(int argc, char **argv) {

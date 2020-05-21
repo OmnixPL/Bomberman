@@ -8,10 +8,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <vector>
+#include <queue>
 
 #include "session.h"
 #include "lobby.h"
 #include "ServerRecv.h"
+#include "serverSender.h"
+#include "packetContainer.h"
 
 #define SERV_PORT 57312
 #define BUFFERSZ 512
@@ -22,16 +25,25 @@ class Server {
         sockaddr_in6 servaddr = {};
         sockaddr_in6 cliaddr = {};
         socklen_t len = sizeof(cliaddr);
+
         std::vector<ClientSession> cs;
         std::string password;
+        
         SessionHandler sh = SessionHandler(cs, password);
+        
         Lobby lobby = Lobby(cs);
-        std::vector<Packet> packets;
-        ServerRecv sr = ServerRecv(servSockfd, packets);
+        
+        std::queue<PacketContainer> packets;
+        std::deque<int> waitingForAck;  // Packets that need to be acknowledged by client: Ans, Lobby
+        ServerRecv receiver = ServerRecv(servSockfd, packets, waitingForAck, cs);
+        ServerSender sender = ServerSender(servSockfd, cs);
 
     public:
         Server(int port, std::string password = "");
-        int testConnection();
+        int testCon();
+        void testLoop();
         int selfTest();
+        // void test2();
+        void test3();
 };
 

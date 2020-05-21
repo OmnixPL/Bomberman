@@ -1,6 +1,7 @@
 #include "packets.h"
 #include <iostream>
 #include <cstring>
+#include <stdexcept>      // std::invalid_argument
 
 int Packet::noCount = 0;
 std::string Packet::userDefault = "";
@@ -40,6 +41,17 @@ int Packet::serialize(char* buffer, size_t len) {
     offset += user.size();
     buffer[offset] = '\0';
     return offset + 1;
+}
+
+packet_t Packet::extractType(char* buffer, size_t len)
+{
+    if(len < sizeof(type))
+    {
+        throw std::invalid_argument(std::string("buffer too short"));
+    }
+    packet_t result;
+    memcpy(&result, buffer, sizeof(result));
+    return result;
 }
 
 PacketAck::PacketAck(int nnoAck, const std::string& user) : Packet{ACK, user}, noAck(nnoAck) {

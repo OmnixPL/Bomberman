@@ -6,6 +6,6 @@ class Lobby {
         std::vector<ClientSession>& cs;
     public:
         Lobby(std::vector<ClientSession>& ccs) : cs(ccs) {};
-        int clientReady(in6_addr addr, PacketRdy& rdy);
+        int clientReady(sockaddr_in6 addr, PacketRdy& rdy);
         bool isAllReady();
 };

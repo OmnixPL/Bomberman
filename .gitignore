@@ -1,3 +1,5 @@
 main
 *.o
 .vscode
+test_scripts/*.txt
+

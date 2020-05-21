@@ -25,10 +25,10 @@ class SessionHandler {
         std::string& password;
     public:
         SessionHandler(std::vector<ClientSession>& ccs, std::string& ppassword) : cs(ccs), password(ppassword) {};
-        int addNewClient(in6_addr addr, PacketAuth& auth);
-        int renewClient(in6_addr addr, Packet& packet);
+        ans_t addNewClient(sockaddr_in6 addr, PacketAuth& auth);
+        int renewClient(sockaddr_in6 addr, Packet& packet);
         int checkTimeouts();
-        int removeClient(in6_addr addr, PacketDisconnect& disc);
+        int removeClient(sockaddr_in6 addr, PacketDisconnect& disc);
 };
 
 #endif
