@@ -4,6 +4,10 @@
 #include <string>
 #include <vector>
 
+#define NO_BOMBS 2 
+#define NO_PLAYERS 4
+#define NO_MAP_FIELDS 121
+
 // TODO: implement Action, Game
 
 enum packet_t {
@@ -121,10 +125,22 @@ class PacketLobby : public Packet {
 class PacketGame : public Packet
 {
 private:
-    /* data */
+    char mapInfo[NO_MAP_FIELDS];
+    int bombPositions[NO_PLAYERS][NO_BOMBS];
+    float playerPositions[NO_PLAYERS];
+    bool isPlayerAlive[NO_PLAYERS];
 public:
     PacketGame(char* buffer, size_t len);
-    ~PacketGame();
+    PacketGame(const std::string user, 
+        char map[NO_MAP_FIELDS],
+        int bombPos[NO_PLAYERS][NO_BOMBS], 
+        float playerPos[NO_PLAYERS],
+        bool isPlayerAlive[NO_PLAYERS]);
+    int serialize(char * buffer, size_t len);
+    int getBombPosition(int player, int which);
+    float getPlayerPosition(int player);
+    bool getPlayerAlive(int player);
+    char * getMapInfo();
 };
 
 

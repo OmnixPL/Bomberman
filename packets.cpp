@@ -181,16 +181,76 @@ PacketAction::PacketAction(char* buffer, size_t len) : Packet(buffer, len)
     int offset = sizeof(type) + sizeof(no) + user.size() + 1;
     action_t actionInBuffer = action_t::NONE;
     bool bombPlacement;
-    std::cout<<"Action before copying "<<actionInBuffer<<std::endl;
     memcpy(static_cast<action_t*>(&actionInBuffer), buffer + offset,  sizeof(char));
-    std::cout<<"Action after copying "<<actionInBuffer<<std::endl;
     offset += sizeof(char);
     memcpy(static_cast<bool*>(&bombPlacement), buffer+offset, sizeof(char));
 }
 
 PacketAction::PacketAction(const std::string user, action_t action, bool bombPlacement) : Packet(packet_t::ACTION, user), action(action), bombPlacement(bombPlacement){}
 
-PacketGame::PacketGame(char* buffer, size_t len) : Packet(buffer, len)
+PacketGame::PacketGame(const std::string user, 
+        char map[NO_MAP_FIELDS],
+        int bombPos[NO_PLAYERS][NO_BOMBS], 
+        float playerPos[NO_PLAYERS],
+        bool playerAlive[NO_PLAYERS]) : 
+            Packet(packet_t::GAME, user)
 {
+    std::copy
+    (
+        map, 
+        map + NO_MAP_FIELDS, 
+        mapInfo
+    );
+    std::copy
+    (
+        &bombPositions[0][0], 
+        &bombPositions[0][0] + NO_PLAYERS * NO_BOMBS,
+        &bombPos[0][0]
+    );
+    std::copy
+    (
+        playerPos,
+        playerPos + NO_PLAYERS,
+        playerPositions
+    );
+    std::cout<<std::endl;
+    std::copy
+    (
+        playerAlive,
+        playerAlive + NO_PLAYERS,
+        isPlayerAlive
+    );
+}
+
+PacketGame::PacketGame(char* buffer, size_t len) : 
+    Packet(buffer, len)
+{
+    int offset = sizeof(type) + sizeof(no) + user.size() + 1;
+
     throw std::runtime_error("Todo implement");
+}
+
+int PacketGame::getBombPosition(int player, int which)
+{
+    return bombPositions[player][which];
+}
+float PacketGame::getPlayerPosition(int player)
+{
+    return playerPositions[player];
+}
+bool PacketGame::getPlayerAlive(int player)
+{
+    return isPlayerAlive[player];
+}
+
+char * PacketGame::getMapInfo()
+{
+    return mapInfo;
+}
+
+
+
+int PacketGame::serialize(char * buffer, size_t len)
+{
+    return -1;
 }

@@ -164,13 +164,13 @@ TEST( PacketTest, CreatePacketLobby )
     ASSERT_EQ(p1.getType(), packet_t::LOBBY);
 }
 
-TEST( PacketActionTest, CreatePacketAction)
+TEST( PacketActionTests, CreatePacketAction)
 {
     char buffer[BUFFERSZ];
     PacketAction p(buffer, BUFFERSZ);
 }
 
-TEST( PacketActionTest, SerializePacketAction )
+TEST( PacketActionTests, SerializePacketAction )
 {
     PacketAction p("testUser", action_t::DOWN, true);
     char buffer[BUFFERSZ];
@@ -178,7 +178,7 @@ TEST( PacketActionTest, SerializePacketAction )
     ASSERT_EQ(strcmp("\5\0\0\0\0\0\0\0testUser\0\2\1", buffer), 0);
 }
 
-TEST( PacketActionTest, SerializeAndDeserialize )
+TEST( PacketActionTests, SerializeAndDeserialize )
 {
     char * buffer = "\5\0\0\0\0\0\0\0testUser\0\2\1";
 
@@ -186,6 +186,58 @@ TEST( PacketActionTest, SerializeAndDeserialize )
     char buffer2[BUFFERSZ];
     p.serialize(buffer2, BUFFERSZ);
     ASSERT_EQ(strcmp(buffer, buffer2), 0);
+}
+
+TEST( PacketGameTests, CreatePacket )
+{
+    char map[NO_MAP_FIELDS];
+    for(int i = 0; i < NO_MAP_FIELDS; i++)
+    {
+        map[i] = (char)i + 'a';
+    }
+    int bombPos[NO_PLAYERS][NO_BOMBS] = 
+    {
+        {0xFF,0xFF},
+        {0xFF,0xFF},
+        {0xFF,0xFF},
+        {0xFF,0xFF}
+    };
+    float playerPos[] = {0.0f, 1.0f, 2.0f, 3.0f};
+    bool playerAlive[] = {true, true, true, true};
+    std::string user = "testUser";
+    
+    PacketGame p(user, map, bombPos, playerPos, playerAlive);
+    int bombPosGot[NO_PLAYERS][NO_BOMBS] =
+    {
+        {p.getBombPosition(0,0), p.getBombPosition(0,1)},
+        {p.getBombPosition(1,0), p.getBombPosition(1,1)},
+        {p.getBombPosition(2,0), p.getBombPosition(2,1)},
+        {p.getBombPosition(3,0), p.getBombPosition(3,1)}
+    };
+    float playerPosGot[] = {
+        p.getPlayerPosition(0),
+        p.getPlayerPosition(1),
+        p.getPlayerPosition(2),
+        p.getPlayerPosition(3)
+        };
+    bool playerAliveGot[] = {
+        p.getPlayerAlive(0),
+        p.getPlayerAlive(1),
+        p.getPlayerAlive(2),
+        p.getPlayerAlive(3)
+    };
+    char * mapInfoGot = p.getMapInfo();
+    ASSERT_EQ(p.getUser(), user);
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        for(int j = 0; j < NO_BOMBS; j++)
+        {
+            ASSERT_EQ(bombPosGot[i][j], bombPos[i][j]);
+        }
+    }
+    ASSERT_THAT(playerPosGot, testing::ElementsAreArray(playerPos));
+    ASSERT_THAT(playerAliveGot, testing::ElementsAreArray(playerAlive));
+    // ASSERT_THAT(mapInfoGot, testing::ElementsAreArray(map));
 }
 
 TEST( IntegrationTests, TestServerLoop )
