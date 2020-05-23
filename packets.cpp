@@ -164,3 +164,32 @@ int PacketLobby::serialize(char* buffer, size_t len) {
     }
     return 0;
 }
+
+int PacketAction::serialize(char* buffer, size_t len)
+{
+    int offset = Packet::serialize(buffer, len);
+    std::cout<<sizeof(action_t)<<std::endl;
+    throw std::runtime_error("TODO implement");
+    
+
+}
+
+PacketAction::PacketAction(char* buffer, size_t len) : Packet(buffer, len)
+{
+    int offset = sizeof(type) + sizeof(no) + user.size() + 1;
+    action_t actionInBuffer = action_t::UP;
+    bool bombPlacement;
+    std::cout<<"Action before copying "<<actionInBuffer<<std::endl;
+    memcpy(buffer + offset, &actionInBuffer, sizeof(char));
+    std::cout<<"Action after copying "<<actionInBuffer<<std::endl;
+    offset += sizeof(char);
+    std::cout<<"Size of action_t "<<sizeof(action_t)<<std::endl;
+    std::cout<<"Size of bool "<<sizeof(bool)<<std::endl;
+    std::cout<<"Size of char "<<sizeof(char)<<std::endl;
+
+}
+
+PacketGame::PacketGame(char* buffer, size_t len) : Packet(buffer, len)
+{
+    throw std::runtime_error("Todo implement");
+}

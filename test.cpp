@@ -164,6 +164,12 @@ TEST( PacketTest, CreatePacketLobby )
     ASSERT_EQ(p1.getType(), packet_t::LOBBY);
 }
 
+TEST( PacketTest, CreatePacketAction)
+{
+    char buffer[BUFFERSZ];
+    PacketAction p(buffer, BUFFERSZ);
+}
+
 TEST( IntegrationTests, TestServerLoop )
 {
     Server server(TEST_PORT);

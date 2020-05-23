@@ -15,7 +15,15 @@ enum packet_t {
     ANS, LOBBY, GAME
 };
 
-enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME};
+enum action_t {
+    NONE,
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
+enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME, MOVE};
 
 class Packet {
     protected:
@@ -109,5 +117,30 @@ class PacketLobby : public Packet {
         
         int serialize(char* buffer, size_t len);
 };
+
+class PacketGame : public Packet
+{
+private:
+    /* data */
+public:
+    PacketGame(char* buffer, size_t len);
+    ~PacketGame();
+};
+
+
+class PacketAction : public Packet
+{
+private:
+    action_t action;
+    bool bombPlacement;
+public:
+    PacketAction(char* buffer, size_t len);
+    int serialize(char* buffer, size_t len);
+    action_t getAction();
+    bool getBombPlacement();
+};
+
+
+
 
 #endif
