@@ -166,28 +166,29 @@ int PacketLobby::serialize(char* buffer, size_t len) {
 }
 
 int PacketAction::serialize(char* buffer, size_t len)
-{
+{    
     int offset = Packet::serialize(buffer, len);
-    std::cout<<sizeof(action_t)<<std::endl;
-    throw std::runtime_error("TODO implement");
-    
 
+    memcpy(buffer+offset, &action, sizeof(char));
+    offset+=sizeof(char);
+    memcpy(buffer+offset, &bombPlacement, sizeof(char));
+    offset += sizeof(char);
+    return offset;
 }
 
 PacketAction::PacketAction(char* buffer, size_t len) : Packet(buffer, len)
 {
     int offset = sizeof(type) + sizeof(no) + user.size() + 1;
-    action_t actionInBuffer = action_t::UP;
+    action_t actionInBuffer = action_t::NONE;
     bool bombPlacement;
     std::cout<<"Action before copying "<<actionInBuffer<<std::endl;
-    memcpy(buffer + offset, &actionInBuffer, sizeof(char));
+    memcpy(static_cast<action_t*>(&actionInBuffer), buffer + offset,  sizeof(char));
     std::cout<<"Action after copying "<<actionInBuffer<<std::endl;
     offset += sizeof(char);
-    std::cout<<"Size of action_t "<<sizeof(action_t)<<std::endl;
-    std::cout<<"Size of bool "<<sizeof(bool)<<std::endl;
-    std::cout<<"Size of char "<<sizeof(char)<<std::endl;
-
+    memcpy(static_cast<bool*>(&bombPlacement), buffer+offset, sizeof(char));
 }
+
+PacketAction::PacketAction(const std::string user, action_t action, bool bombPlacement) : Packet(packet_t::ACTION, user), action(action), bombPlacement(bombPlacement){}
 
 PacketGame::PacketGame(char* buffer, size_t len) : Packet(buffer, len)
 {

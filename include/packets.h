@@ -135,6 +135,7 @@ private:
     bool bombPlacement;
 public:
     PacketAction(char* buffer, size_t len);
+    PacketAction(const std::string user, action_t action, bool bombPlacement);
     int serialize(char* buffer, size_t len);
     action_t getAction();
     bool getBombPlacement();

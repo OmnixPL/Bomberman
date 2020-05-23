@@ -164,10 +164,28 @@ TEST( PacketTest, CreatePacketLobby )
     ASSERT_EQ(p1.getType(), packet_t::LOBBY);
 }
 
-TEST( PacketTest, CreatePacketAction)
+TEST( PacketActionTest, CreatePacketAction)
 {
     char buffer[BUFFERSZ];
     PacketAction p(buffer, BUFFERSZ);
+}
+
+TEST( PacketActionTest, SerializePacketAction )
+{
+    PacketAction p("testUser", action_t::DOWN, true);
+    char buffer[BUFFERSZ];
+    p.serialize(buffer, BUFFERSZ);
+    ASSERT_EQ(strcmp("\5\0\0\0\0\0\0\0testUser\0\2\1", buffer), 0);
+}
+
+TEST( PacketActionTest, SerializeAndDeserialize )
+{
+    char * buffer = "\5\0\0\0\0\0\0\0testUser\0\2\1";
+
+    PacketAction p(buffer, sizeof(char)*19);
+    char buffer2[BUFFERSZ];
+    p.serialize(buffer2, BUFFERSZ);
+    ASSERT_EQ(strcmp(buffer, buffer2), 0);
 }
 
 TEST( IntegrationTests, TestServerLoop )
