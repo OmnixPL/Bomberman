@@ -127,7 +127,7 @@ class PacketGame : public Packet
 {
 private:
     char mapInfo[NO_MAP_FIELDS];
-    int bombPositions[NO_PLAYERS][NO_BOMBS];
+    int bombPositions[NO_PLAYERS * NO_BOMBS][2];
     float playerPositions[NO_PLAYERS][2];
     bool isPlayerAlive[NO_PLAYERS];
 
@@ -139,11 +139,12 @@ public:
     PacketGame(char* buffer, size_t len);
     PacketGame(const std::string user, 
         char map[NO_MAP_FIELDS],
-        int bombPos[NO_PLAYERS][NO_BOMBS], 
+        int bombPos[NO_PLAYERS * NO_BOMBS][2], 
         float playerPos[NO_PLAYERS][2],
         bool isPlayerAlive[NO_PLAYERS]);
     int serialize(char * buffer, size_t len);
-    int getBombPosition(int player, int which);
+    int getBombPositionX(int player, int which);
+    int getBombPositionY(int player, int which);
     float getPlayerPosition(int player, int coord);
     bool getPlayerAlive(int player);
     char * getMapInfo();

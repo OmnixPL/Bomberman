@@ -190,7 +190,7 @@ PacketAction::PacketAction(const std::string user, action_t action, bool bombPla
 
 PacketGame::PacketGame(const std::string user, 
         char map[NO_MAP_FIELDS],
-        int bombPos[NO_PLAYERS][NO_BOMBS], 
+        int bombPos[NO_PLAYERS * NO_BOMBS][2], 
         float playerPos[NO_PLAYERS][2],
         bool playerAlive[NO_PLAYERS]) : 
             Packet(packet_t::GAME, user)
@@ -204,7 +204,7 @@ PacketGame::PacketGame(const std::string user,
     std::copy
     (
         &bombPos[0][0], 
-        &bombPos[0][0] + NO_PLAYERS * NO_BOMBS,
+        &bombPos[0][0] + NO_PLAYERS * NO_BOMBS * 2,
         &bombPositions[0][0]
     );
     std::copy
@@ -224,18 +224,64 @@ PacketGame::PacketGame(const std::string user,
 PacketGame::PacketGame(char* buffer, size_t len) : 
     Packet(buffer, len)
 {
+    // deserialize map
     int offset = sizeof(type) + sizeof(no) + user.size() + 1;
-    for(int i = 0; i < 30; i++)
+    for(int i = 0; i < NO_MAP_BYTES - 1; i++)
     {
         char ch = 0;
+        memcpy(&ch, buffer+offset, sizeof(char));
+        offset += sizeof(char);
+
+        for(int j = 0; j < 4; j++)
+        {
+            mapInfo[4*i+j] = (ch>>(3-j)*2) & 3;   
+        }
+    }
+    char ch;
+    memcpy(&ch, buffer+offset, sizeof(char));
+    offset += sizeof(char);
+    mapInfo[NO_MAP_FIELDS - 1] = (ch>>6)&3;
+
+    // deserialize bomb positions
+    for(int i = 0; i < NO_PLAYERS * NO_BOMBS; i++)
+    {
+        char ch;
+        memcpy(&ch, buffer+offset, sizeof(char));
+        
+        offset += sizeof(char);
+        bombPositions[i][0] = (ch>>4) & 15;
+        bombPositions[i][1] = ch & 15;
     }
 
-    throw std::runtime_error("Todo implement");
+    // deserialize player positions
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        float x, y;
+        memcpy(&x, buffer+offset, sizeof(float));
+        offset += sizeof(float);
+        memcpy(&y, buffer+offset, sizeof(float));
+        offset += sizeof(float);
+        playerPositions[i][0] = x;
+        playerPositions[i][1] = y;
+    }
+
+    // deserialize information if players are alive
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        bool b;
+        memcpy(&b, buffer+offset, sizeof(bool));
+        offset += sizeof(bool);
+        isPlayerAlive[i] = b;
+    }
 }
 
-int PacketGame::getBombPosition(int player, int which)
+int PacketGame::getBombPositionX(int player, int which)
 {
-    return bombPositions[player][which];
+    return bombPositions[player*NO_BOMBS + which][0];
+}
+int PacketGame::getBombPositionY(int player, int which)
+{
+    return bombPositions[player*NO_BOMBS + which][1];
 }
 float PacketGame::getPlayerPosition(int player, int coord)
 {
@@ -253,7 +299,7 @@ char * PacketGame::getMapInfo()
 
 int PacketGame::serializeMap(char * buffer, size_t len, int offset)
 {
-    for(int i = 0; i < 30; i++)
+    for(int i = 0; i < NO_MAP_BYTES - 1; i++)
     {
         char result = '\0';
         // put four 2-bit codes into a single byte (char)
@@ -272,9 +318,8 @@ int PacketGame::serializeMap(char * buffer, size_t len, int offset)
         offset += sizeof(char);
     }
     // handle last code
-    char ch1 = mapInfo[4 * 30];
-    ch1 = (ch1 & 3)<<6;
-    char result = '\0' | ch1 ;
+    char ch1 = mapInfo[NO_MAP_FIELDS-1];
+    char result = (ch1 & 3)<<6;
     memcpy(buffer+offset, &result, sizeof(char));
     offset += sizeof(char);
     return offset;
@@ -282,7 +327,7 @@ int PacketGame::serializeMap(char * buffer, size_t len, int offset)
 
 int PacketGame::serializeBombs(char * buffer, size_t len, int offset)
 {
-    for (int i = 0; i < NO_PLAYERS; i++)
+    for (int i = 0; i < NO_PLAYERS * NO_BOMBS; i++)
     {
         int x = bombPositions[i][0];
         int y = bombPositions[i][1];
@@ -327,5 +372,6 @@ int PacketGame::serialize(char * buffer, size_t len)
     offset = serializeBombs(buffer, len, offset);
     offset = serializePlayerPos(buffer, len, offset);
     offset = serializePlayerAlive(buffer, len, offset);
+    
     return offset;
 }
