@@ -193,16 +193,24 @@ TEST( PacketGameTests, CreatePacket )
     char map[NO_MAP_FIELDS];
     for(int i = 0; i < NO_MAP_FIELDS; i++)
     {
-        map[i] = (char)i + 'a';
+        map[i] = 'a';
     }
     int bombPos[NO_PLAYERS][NO_BOMBS] = 
     {
-        {0xFF,0xFF},
-        {0xFF,0xFF},
-        {0xFF,0xFF},
-        {0xFF,0xFF}
+        {1,1},
+        {2,2},
+        {3,3},
+        {4,4}
     };
-    float playerPos[] = {0.0f, 1.0f, 2.0f, 3.0f};
+
+
+    float playerPos[NO_PLAYERS][2] = 
+    {
+        {1.0f, 1.0f},
+        {1.0f, 2.0f},
+        {1.0f, 3.0f},
+        {1.0f, 4.0f},
+    };
     bool playerAlive[] = {true, true, true, true};
     std::string user = "testUser";
     
@@ -214,11 +222,11 @@ TEST( PacketGameTests, CreatePacket )
         {p.getBombPosition(2,0), p.getBombPosition(2,1)},
         {p.getBombPosition(3,0), p.getBombPosition(3,1)}
     };
-    float playerPosGot[] = {
-        p.getPlayerPosition(0),
-        p.getPlayerPosition(1),
-        p.getPlayerPosition(2),
-        p.getPlayerPosition(3)
+    float playerPosGot[NO_PLAYERS][2] = {
+        {p.getPlayerPosition(0,0),p.getPlayerPosition(0,1)},
+        {p.getPlayerPosition(1,0),p.getPlayerPosition(1,1)},
+        {p.getPlayerPosition(2,0),p.getPlayerPosition(2,1)},
+        {p.getPlayerPosition(3,0),p.getPlayerPosition(3,1)}
         };
     bool playerAliveGot[] = {
         p.getPlayerAlive(0),
@@ -228,16 +236,48 @@ TEST( PacketGameTests, CreatePacket )
     };
     char * mapInfoGot = p.getMapInfo();
     ASSERT_EQ(p.getUser(), user);
+    ASSERT_THAT(playerAliveGot, testing::ElementsAreArray(playerAlive));
+
     for(int i = 0; i < NO_PLAYERS; i++)
     {
-        for(int j = 0; j < NO_BOMBS; j++)
-        {
-            ASSERT_EQ(bombPosGot[i][j], bombPos[i][j]);
-        }
+        ASSERT_EQ(playerPosGot[i][0], playerPos[i][0]);
+        ASSERT_EQ(playerPosGot[i][1], playerPos[i][1]);
     }
-    ASSERT_THAT(playerPosGot, testing::ElementsAreArray(playerPos));
-    ASSERT_THAT(playerAliveGot, testing::ElementsAreArray(playerAlive));
-    // ASSERT_THAT(mapInfoGot, testing::ElementsAreArray(map));
+
+    for(int i = 0; i < NO_MAP_FIELDS; i++)
+    {
+        ASSERT_EQ(map[i], mapInfoGot[i]);
+    }
+}
+
+TEST( PacketGameTests, SerializePacket)
+{
+    char map[NO_MAP_FIELDS];
+    for(int i = 0; i < NO_MAP_FIELDS; i++)
+    {
+        map[i] = '\1';
+    }
+    int bombPos[NO_PLAYERS][NO_BOMBS] = 
+    {
+        {1,2},
+        {1,1},
+        {1,1},
+        {1,1}
+    };
+    float playerPos[NO_PLAYERS][2] = 
+    {
+        {1.0f, 1.0f},
+        {1.0f, 2.0f},
+        {1.0f, 3.0f},
+        {1.0f, 4.0f},
+    };
+    bool playerAlive[] = {true, true, true, true};
+    std::string user = "testUser";
+    
+    PacketGame p(user, map, bombPos, playerPos, playerAlive);
+    char buffer[BUFFERSZ];
+    p.serialize(buffer, BUFFERSZ);
+
 }
 
 TEST( IntegrationTests, TestServerLoop )

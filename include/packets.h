@@ -7,6 +7,7 @@
 #define NO_BOMBS 2 
 #define NO_PLAYERS 4
 #define NO_MAP_FIELDS 121
+#define NO_MAP_BYTES 31
 
 // TODO: implement Action, Game
 
@@ -127,18 +128,23 @@ class PacketGame : public Packet
 private:
     char mapInfo[NO_MAP_FIELDS];
     int bombPositions[NO_PLAYERS][NO_BOMBS];
-    float playerPositions[NO_PLAYERS];
+    float playerPositions[NO_PLAYERS][2];
     bool isPlayerAlive[NO_PLAYERS];
+
+    int serializeMap(char*buffer, size_t len, int offset);
+    int serializeBombs(char * buffer, size_t len, int offset);
+    int serializePlayerPos(char * buffer, size_t len, int offset);
+    int serializePlayerAlive(char * buffer, size_t len, int offset);
 public:
     PacketGame(char* buffer, size_t len);
     PacketGame(const std::string user, 
         char map[NO_MAP_FIELDS],
         int bombPos[NO_PLAYERS][NO_BOMBS], 
-        float playerPos[NO_PLAYERS],
+        float playerPos[NO_PLAYERS][2],
         bool isPlayerAlive[NO_PLAYERS]);
     int serialize(char * buffer, size_t len);
     int getBombPosition(int player, int which);
-    float getPlayerPosition(int player);
+    float getPlayerPosition(int player, int coord);
     bool getPlayerAlive(int player);
     char * getMapInfo();
 };
