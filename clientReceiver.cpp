@@ -1,25 +1,26 @@
 #include "clientReceiver.h"
 
-ClientReceiver::ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr) : cliSockfd(ccliSockfd), servaddr(sservaddr) {
-    serverLen = sizeof(servaddr);
+ClientReceiver::ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr) : 
+    Receiver(ccliSockfd, sservaddr)
+{
+    typeToBehaviour = {
+        {packet_t::ANS, handlePacketAns},
+        {packet_t::GAME, handlePacketGame},
+        {packet_t::LOBBY,handlePacketLobby},
+        {packet_t::ACK, handlePacketAck}
+    };
 }
 
 ClientReceiver::~ClientReceiver()
 {
 }
 
-// void ClientReceiver::defaultBehaviour(char* buffer, size_t len)
-// {
-//     std::cout<<"I'm inside method defaultBehaviour and I see packet of type "<<Packet::extractType(buffer, len);
-//     isExitRequested = true;
-// }
-
 std::shared_ptr<Packet> ClientReceiver::grabPacket() {
     char buffer[BUFFERSZ];
     int readCount;
     std::shared_ptr<Packet> packet;
 
-    if ( (readCount = recvfrom(cliSockfd, buffer, BUFFERSZ, MSG_DONTWAIT, (struct sockaddr *) &servaddr, &serverLen)) <= 0) {
+    if ( (readCount = recvfrom(mySockfd, buffer, BUFFERSZ, MSG_DONTWAIT, (struct sockaddr *) &targetAddr, &serverLen)) <= 0) {
         //perror("No packets to read");
         return nullptr;
     }
@@ -34,9 +35,12 @@ std::shared_ptr<Packet> ClientReceiver::grabPacket() {
     else if ( type == LOBBY ) {
         packet = std::make_shared<PacketLobby>(buffer, readCount);
     } 
-    // TODO add game
-    else {
-        // TODO ignore?
+    else if ( type == GAME )
+    {
+        packet = std::make_shared<PacketGame>(buffer, readCount);
+    }
+    else 
+    {
         packet = std::make_shared<Packet>(buffer, readCount);
     }
     if (!isPacketOK(packet))
@@ -57,4 +61,27 @@ bool ClientReceiver::isPacketOK(std::shared_ptr<Packet> packet) {
         return false;
 
     return true;
+}
+
+void ClientReceiver::defaultBehaviour(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"I'm inside method defaultBehaviour";
+    isExitRequested = true;
+}
+
+void ClientReceiver::handlePacketAns(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet ANS\n";
+}
+void ClientReceiver::handlePacketLobby(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet LOBBY\n";
+}
+void ClientReceiver::handlePacketGame(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet GAME\n";
+}
+void ClientReceiver::handlePacketAck(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet ACK\n";
 }
