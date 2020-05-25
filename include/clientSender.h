@@ -7,6 +7,7 @@
 #include <queue>
 #include <thread>
 #include <mutex>
+#include <condition_variable>
 #include "packets.h"
 
 class ClientSender
@@ -20,7 +21,9 @@ private:
     
     void sendToServer(std::shared_ptr<Packet> p);
     std::queue<std::shared_ptr<Packet> > packets;
+    std::condition_variable condVar;
 public:
+    bool isQueueNotEmpty();
     std::shared_ptr<Packet> popFromQueue();
     void addToQueue(std::shared_ptr<Packet> p);
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <chrono>
 
 #include "client.h"
 #include "include/packets.h"
@@ -37,9 +38,11 @@ void Client::run()
     {
         sender->addToQueue(pointer);
     }
-    (*sender)();
-    // std::thread senderThread(&ClientSender::operator(), sender);
-    // senderThread.join();
+    std::thread senderThread(&ClientSender::operator(), sender);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+    std::thread controllerThread(&Controller::operator(), controller);
+    senderThread.join();
+    controllerThread.join();
 }
 
 // use with testCon in server

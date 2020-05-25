@@ -1,5 +1,7 @@
 #include <clientSender.h>
 #include <client.h>
+#include <condition_variable>
+#include <mutex>
 
 ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr, std::mutex &mutex, bool * exitPointer) : 
     sockfd(ssockfd), 
@@ -14,17 +16,30 @@ ClientSender::~ClientSender() {}
 
 void ClientSender::operator()()
 {
-    while (!(*isExitRequested) && !packets.empty())
+    while (!(*isExitRequested))
     {
         std::cout<<"Client: sending packet\n";
         std::shared_ptr<Packet> p = popFromQueue();
-        sendToServer(p);
+        if(p != nullptr)
+        {
+            sendToServer(p);
+        }        
     }
+}
+
+bool ClientSender::isQueueNotEmpty()
+{
+    return !packets.empty();
 }
 
 std::shared_ptr<Packet> ClientSender::popFromQueue()
 {
-    std::lock_guard<std::mutex>(*queueMutex);
+    std::unique_lock<std::mutex> lck(*queueMutex);
+    // wait until queue is not empty
+    condVar.wait_for(lck, std::chrono::seconds(30), std::bind(&ClientSender::isQueueNotEmpty, this));
+    // only in case of exit request
+    if(packets.empty())
+        return nullptr;
     std::shared_ptr<Packet> result = packets.front();
     packets.pop();
     return result;
@@ -33,6 +48,7 @@ void ClientSender::addToQueue(std::shared_ptr<Packet> p)
 {
     std::lock_guard<std::mutex>(*queueMutex);
     packets.push(p);
+    condVar.notify_one();
 }
 
 void ClientSender::sendToServer(std::shared_ptr<Packet> p)

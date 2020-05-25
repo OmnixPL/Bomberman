@@ -1,1 +1,1 @@
-EXIT
+SHUTDOWN

@@ -26,8 +26,8 @@ void Controller::operator()()
         }
         else if(command == "SHUTDOWN")
         {
-            // PacketDisconnect * p = new PacketDisconnect(model->getUsername());
-            // sender->addToQueue(p);
+            std::cout<<"Request exit";
+            *isExitRequested = true;
         }
         else if(command == "UP")
         {
