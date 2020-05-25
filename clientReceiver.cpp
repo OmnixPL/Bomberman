@@ -1,7 +1,8 @@
 #include "clientReceiver.h"
+#include <view.h>
 
-ClientReceiver::ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr) : 
-    Receiver(ccliSockfd, sservaddr)
+ClientReceiver::ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr, bool * exitPointer) : 
+    Receiver(ccliSockfd, sservaddr, exitPointer)
 {
     typeToBehaviour = {
         {packet_t::ANS, handlePacketAns},
@@ -66,22 +67,59 @@ bool ClientReceiver::isPacketOK(std::shared_ptr<Packet> packet) {
 void ClientReceiver::defaultBehaviour(std::shared_ptr<Packet> packet)
 {
     std::cout<<"I'm inside method defaultBehaviour";
-    isExitRequested = true;
+    *isExitRequested = true;
 }
 
 void ClientReceiver::handlePacketAns(std::shared_ptr<Packet> packet)
 {
     std::cout<<"ClientReceiver: Handling packet ANS\n";
+    std::shared_ptr<PacketAns> packetAns = std::dynamic_pointer_cast<PacketAns>(packet);
+    switch (packetAns->getAns())
+    {
+        case ans_t::OK :
+        {
+            std::cout<<"Properly connected with server\n";
+            break;
+        }
+        case ans_t::BAD_USERNAME :
+        {
+            std::cout<<"Username incorrect\n";
+            break;
+        }
+        case ans_t::BAD_PASSWORD :
+        {
+            std::cout<<"Password incorrect\n";
+            break;
+        }
+        case ans_t::FULL :
+        {
+            std::cout<<"Lobby is full\n";
+            break;
+        }
+        case ans_t::TIMEOUT :
+        {
+            std::cout<<"Timeout\n";
+            break;
+        }    
+        default:
+            std::cout<<"Packet answer incorrect. Ignored\n";
+            break;
+    }
 }
 void ClientReceiver::handlePacketLobby(std::shared_ptr<Packet> packet)
 {
-    std::cout<<"ClientReceiver: Handling packet LOBBY\n";
+    std::shared_ptr<PacketLobby> packetLobby = std::dynamic_pointer_cast<PacketLobby>(packet);
+    LobbyView view(*packetLobby);
+    std::cout<<view;
 }
 void ClientReceiver::handlePacketGame(std::shared_ptr<Packet> packet)
 {
-    std::cout<<"ClientReceiver: Handling packet GAME\n";
+    std::shared_ptr<PacketGame> packetGame = std::dynamic_pointer_cast<PacketGame>(packet);
+    GameView view(*packetGame);
+    std::cout<<view;
 }
 void ClientReceiver::handlePacketAck(std::shared_ptr<Packet> packet)
 {
     std::cout<<"ClientReceiver: Handling packet ACK\n";
+    std::cout<<"Server acknowledged\n";
 }

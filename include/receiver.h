@@ -19,9 +19,9 @@ protected:
     std::map<packet_t, std::function< void(std::shared_ptr<Packet>) > > typeToBehaviour;
     virtual void defaultBehaviour(std::shared_ptr<Packet> packet) = 0;
     virtual std::shared_ptr<Packet> grabPacket() = 0;
+    bool * isExitRequested;
 public:
-    bool isExitRequested = false;
-    Receiver(int& cliSockfd, sockaddr_in6& servaddr);
+    Receiver(int& cliSockfd, sockaddr_in6& servaddr, bool * exitPointer);
     
     void operator()();
     virtual ~Receiver();

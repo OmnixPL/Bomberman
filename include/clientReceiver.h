@@ -18,7 +18,7 @@ private:
     static void handlePacketGame(std::shared_ptr<Packet> packet);
 public:
     // ClientReceiver(int& cliSockfd, char* address, int port, struct timeval timeout);
-    ClientReceiver(int& cliSockfd, sockaddr_in6& servaddr);
+    ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr, bool * exitPointer);
     ~ClientReceiver();
 
     std::shared_ptr<Packet> grabPacket();   // currently returns packet but can be easily added to queue if needed

@@ -7,6 +7,7 @@
 #define NO_BOMBS 2 
 #define NO_PLAYERS 4
 #define NO_MAP_FIELDS 121
+#define MAP_SIDE 11
 #define NO_MAP_BYTES 31
 
 // TODO: implement Action, Game
@@ -28,7 +29,7 @@ enum action_t {
     RIGHT
 };
 
-enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME, MOVE};
+enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME};
 
 class Packet {
     protected:

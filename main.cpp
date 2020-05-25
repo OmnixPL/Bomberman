@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
             //server.selfTest();
         }
         else if (argc > 4 && !strcmp(argv[1], "client")) {
-            Client client(atoi(argv[2]), argv[3], atoi(argv[4]));
+            Client client(atoi(argv[2]), argv[3], atoi(argv[4]), argv[5], argv[6]);
             client.testLoop();
         }
     }

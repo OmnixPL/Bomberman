@@ -1,7 +1,12 @@
 #include <clientSender.h>
 #include <client.h>
 
-ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr) : sockfd(ssockfd), serverAddr(sserverAddr) {
+ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr, std::mutex &mutex, bool * exitPointer) : 
+    sockfd(ssockfd), 
+    serverAddr(sserverAddr),
+    queueMutex(&mutex),
+    isExitRequested(exitPointer)
+{
     serverLen = sizeof(serverAddr);
 }
 
@@ -9,22 +14,32 @@ ClientSender::~ClientSender() {}
 
 void ClientSender::operator()()
 {
-    packets.push(PacketAck(4, "testUser"));
-
-    while (!packets.empty())
+    while (!(*isExitRequested) && !packets.empty())
     {
-        sendToServer(packets.front());
-        packets.pop();
+        std::cout<<"Client: sending packet\n";
+        std::shared_ptr<Packet> p = popFromQueue();
+        sendToServer(p);
     }
-    
 }
 
-void ClientSender::sendToServer(Packet p)
+std::shared_ptr<Packet> ClientSender::popFromQueue()
+{
+    std::lock_guard<std::mutex>(*queueMutex);
+    std::shared_ptr<Packet> result = packets.front();
+    packets.pop();
+    return result;
+}
+void ClientSender::addToQueue(std::shared_ptr<Packet> p)
+{
+    std::lock_guard<std::mutex>(*queueMutex);
+    packets.push(p);
+}
+
+void ClientSender::sendToServer(std::shared_ptr<Packet> p)
 {
     char b[BUFFERSZ];
-    p.serialize(b, BUFFERSZ);
-    std::cout<<"Send packet: "<<b<<std::endl;
-    sendto(sockfd, b, sizeof(p), 0, (const struct sockaddr *) &serverAddr, sizeof(serverAddr));
+    int count = p->serialize(b, BUFFERSZ);
+    sendto(sockfd, b, count, 0, (const struct sockaddr *) &serverAddr, sizeof(serverAddr));
 }
 
 int ClientSender::sendAck(int noAck) {

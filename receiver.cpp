@@ -4,17 +4,18 @@
 #include "receiver.h"
 #include "client.h"
 
-Receiver::Receiver(int& cliSockfd, sockaddr_in6& servaddr) : 
+Receiver::Receiver(int& cliSockfd, sockaddr_in6& servaddr, bool * exitPointer) : 
     mySockfd(cliSockfd),
     targetAddr(servaddr),
-    serverLen(sizeof(servaddr))
+    serverLen(sizeof(servaddr)),
+    isExitRequested(exitPointer)
 {}
 
 Receiver::~Receiver(){std::cout<<"Destroying receiver object";};
 
 void Receiver::operator()()
 {
-    while (!isExitRequested)
+    while (!(*isExitRequested))
     {
         std::shared_ptr<Packet> packet = grabPacket();
         if(packet != nullptr)

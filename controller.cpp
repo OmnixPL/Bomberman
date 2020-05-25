@@ -1,6 +1,8 @@
 #include <controller.h>
 #include <iostream>
 #include <packets.h>
+#include <thread>
+#include <chrono>
 
 void Controller::operator()()
 {
@@ -43,19 +45,24 @@ void Controller::operator()()
         {
             ;
         }
+        else if(command == "EXIT")
+        {
+
+        }
         else
         {
             std::cout<<"Ignoring invalid command " << command;
         }
-        
+        std::this_thread::sleep_for(std::chrono::seconds(3));
     }
     
 }
 
-Controller::Controller(std::string filepath, ClientSender * sender, Model * model) : 
+Controller::Controller(std::string filepath, ClientSender * sender, Model * model, bool * exitPointer) : 
     inputFile(filepath, std::ifstream::in),
     sender(sender),
-    model(model)
+    model(model),
+    isExitRequested(exitPointer)
 {
 }
 
