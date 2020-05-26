@@ -66,7 +66,8 @@ PacketAck::PacketAck(char* buffer, size_t len) : Packet{buffer, len} {
 int PacketAck::serialize(char* buffer, size_t len) {
     int offset = Packet::serialize(buffer, len);
     memcpy(buffer + offset, &noAck, sizeof(noAck));
-    return 0;
+    offset += sizeof(noAck);
+    return offset;
 }
 
 PacketAuth::PacketAuth(std::string& ppassword, const std::string& uuser) : Packet{AUTH, uuser}, password(ppassword) {
@@ -83,7 +84,8 @@ int PacketAuth::serialize(char* buffer, size_t len) {
     password.copy(buffer + offset, password.size());
     offset += password.size();
     buffer[offset] = '\0';
-    return 0;
+    offset += 1;
+    return offset;
 }
 
 PacketRdy::PacketRdy(bool rrdy, const std::string& user) : Packet{RDY, user}, rdy(rrdy) {
@@ -98,7 +100,8 @@ PacketRdy::PacketRdy(char* buffer, size_t len) : Packet{buffer, len} {
 int PacketRdy::serialize(char* buffer, size_t len) {
     int offset = Packet::serialize(buffer, len);
     memcpy(buffer + offset, &rdy, sizeof(rdy));
-    return 0;
+    offset += sizeof(rdy);
+    return offset;
 }
 
 PacketRenew::PacketRenew(const std::string& user) : Packet{RENEW, user} {
@@ -125,7 +128,8 @@ PacketAns::PacketAns(char* buffer, size_t len) : Packet{buffer, len} {
 int PacketAns::serialize(char* buffer, size_t len) {
     int offset = Packet::serialize(buffer, len);
     memcpy(buffer + offset, &ans, sizeof(ans));
-    return 0;
+    offset += sizeof(ans);
+    return offset;
 }
 
 PacketLobby::PacketLobby(std::vector<std::string> pplayers, std::vector<bool> rrdy, const std::string& user) : Packet{LOBBY, user}, players(pplayers), rdy(rrdy) {
@@ -162,7 +166,7 @@ int PacketLobby::serialize(char* buffer, size_t len) {
         memcpy(buffer + offset, &r, sizeof(rdy[i]));
         offset++;
     }
-    return 0;
+    return offset;
 }
 
 int PacketAction::serialize(char* buffer, size_t len)
