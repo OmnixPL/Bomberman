@@ -34,3 +34,32 @@ void Receiver::operator()()
         
     }
 }
+
+void Receiver::runOnce()
+{
+    if(*isExitRequested)
+    {
+        return;
+    }
+    std::cout<<"Receiver running \n";
+    std::shared_ptr<Packet> packet = grabPacket();
+    if(packet != nullptr)
+    {
+        packet_t type = packet->getType();
+        // no behaviour for such type
+        if(typeToBehaviour.find(type) == typeToBehaviour.end())
+        {
+            defaultBehaviour(packet);
+        }
+        else
+        {
+            typeToBehaviour[type](packet);
+        }
+    }
+    else
+    {
+        std::cout<<"Receiver got nullptr\n";
+    }
+    
+
+}

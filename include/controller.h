@@ -23,6 +23,7 @@ public:
     );
     ~Controller();
     void operator()();
+    void runOnce();
 };
 
 #endif // CONTROLLER_H

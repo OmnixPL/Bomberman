@@ -1,4 +1,4 @@
-AUTH haselko
+AUTH Haselko
 READY
 READY
 UP

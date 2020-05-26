@@ -40,6 +40,7 @@ class Client {
         void testSender();
         void testLoop();
         void run();
+        void runSequential();
         // void test2();
         // void test3();
         // void test4();

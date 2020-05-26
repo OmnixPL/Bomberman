@@ -9,10 +9,14 @@ std::ostream & operator<<(std::ostream &out, const LobbyView &s)
     }
 }
 
-LobbyView::LobbyView(PacketLobby p) :
-        players(p.players),
-        playerRdy(p.rdy)
-{}
+LobbyView::LobbyView(PacketLobby p) 
+{
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        this->players[i] = p.players[i];
+        this->playerRdy[i] = p.rdy[i];
+    }
+}
 
 std::ostream & operator<<(std::ostream &out, const GameView &s)
 {

@@ -20,9 +20,10 @@ private:
     bool * isExitRequested;
     
     void sendToServer(std::shared_ptr<Packet> p);
-    std::queue<std::shared_ptr<Packet> > packets;
+    
     std::condition_variable condVar;
 public:
+    std::queue<std::shared_ptr<Packet> > packets;
     bool isQueueNotEmpty();
     std::shared_ptr<Packet> popFromQueue();
     void addToQueue(std::shared_ptr<Packet> p);
@@ -34,6 +35,7 @@ public:
     int sendRenew();
     int sendDisconnect();
     void operator()();
+    void runOnce();
     ~ClientSender();
 };
 

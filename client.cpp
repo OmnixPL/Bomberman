@@ -34,20 +34,31 @@ Client::Client(
 
 void Client::run()
 {
-    std::thread senderThread(&ClientSender::operator(), sender);
+    sender->sendAuth("Haselko");
+    sender->sendAck(567);
+    sender->sendRdy(true);
+    sender->sendRenew();
     std::thread receiverThread(&ClientReceiver::operator(), receiver);
-    std::thread controllerThread(&Controller::operator(), controller);
-    if(senderThread.joinable())
+    // std::thread senderThread(&ClientSender::operator(), sender);
+    // std::thread controllerThread(&Controller::operator(), controller);
+    // senderThread.join();
+    receiverThread.join();
+    // controllerThread.join();
+    
+}
+
+void Client::runSequential()
+{
+    sender->sendAuth("Haselko");
+    sender->sendAck(567);
+    sender->sendRdy(true);
+    sender->sendRenew();
+    while (!isExitRequested || sender->isQueueNotEmpty())
     {
-        senderThread.join();
-    }
-    if(receiverThread.joinable())
-    {
-        receiverThread.join();
-    }
-    if (controllerThread.joinable())
-    {
-        controllerThread.join();
+        std::cout<<"Tutaj\n";
+        //sender->runOnce();
+        receiver->runOnce();
+        //controller->runOnce();
     }
     
 }

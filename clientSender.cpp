@@ -35,6 +35,19 @@ void ClientSender::operator()()
     }
 }
 
+void ClientSender::runOnce()
+{
+    if(!(*isExitRequested) || isQueueNotEmpty() )
+    {
+        if(isQueueNotEmpty())
+        {
+            std::shared_ptr<Packet> p = packets.front();
+            packets.pop();
+            sendToServer(p);
+        }
+    }
+}
+
 bool ClientSender::isQueueNotEmpty()
 {
     return !packets.empty();
