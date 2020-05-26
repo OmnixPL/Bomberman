@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
                 argv[5], 
                 argv[6], 
                 atoi(argv[7]));
-            client.testLoop();
+            client.runSequential();
         }
     }
     else {
