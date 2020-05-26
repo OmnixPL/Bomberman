@@ -389,7 +389,7 @@ TEST( IntegrationTests, TestCase4 )
 
 TEST( IntegrationTests, TestCase5 )
 {
-    Client client(6, "127.0.0.1", TEST_PORT, "testUser4", "resources/test5.txt",2);
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser5", "resources/test5.txt",2);
     client.runSequential();
 }
  
