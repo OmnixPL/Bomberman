@@ -34,10 +34,6 @@ Client::Client(
 
 void Client::run()
 {
-    sender->sendAuth("Haselko");
-    sender->sendAck(567);
-    sender->sendRdy(true);
-    sender->sendRenew();
     std::thread receiverThread(&ClientReceiver::operator(), receiver);
     // std::thread senderThread(&ClientSender::operator(), sender);
     // std::thread controllerThread(&Controller::operator(), controller);
@@ -49,10 +45,6 @@ void Client::run()
 
 void Client::runSequential()
 {
-    sender->sendAuth("Haselko");
-    sender->sendAck(567);
-    sender->sendRdy(true);
-    sender->sendRenew();
     while (!isExitRequested || sender->isQueueNotEmpty())
     {
         sender->runOnce();
