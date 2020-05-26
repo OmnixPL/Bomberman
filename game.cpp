@@ -12,7 +12,7 @@ void Game::tick() {
             updatePlayerPosition(i);
     }
     // explode bombs
-    while (bombs.front().time < system_clock::now()) {
+    while (!bombs.empty() && bombs.front().time < system_clock::now()) {
         explodeBomb(bombs.front());
         bombs.pop_front();
     }

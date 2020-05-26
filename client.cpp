@@ -44,7 +44,7 @@ void Client::run()
 }
 
 void Client::runSequential()
-{
+{   
     while (!isExitRequested || sender->isQueueNotEmpty())
     {
         sender->runOnce();

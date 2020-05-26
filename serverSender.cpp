@@ -7,8 +7,10 @@ int ServerSender::sendAck(ClientSession client, int noAck) {
     char buffer[BUFFERSZ];
     PacketAck ack(noAck);
 
-    ack.serialize(buffer, BUFFERSZ);
-    if ( sendto(servSockfd, buffer, sizeof(ack), 0, (const struct sockaddr *) &(client.addr), clientLen) < 0 )
+    int size;
+
+    size = ack.serialize(buffer, BUFFERSZ);
+    if ( sendto(servSockfd, buffer, size, 0, (const struct sockaddr *) &(client.addr), clientLen) < 0 )
         return -1;
 
     return 0;
@@ -19,8 +21,10 @@ int ServerSender::sendAck(sockaddr_in6 client, int noAck) {
     char buffer[BUFFERSZ];
     PacketAck ack(noAck);
 
-    ack.serialize(buffer, BUFFERSZ);
-    if ( sendto(servSockfd, buffer, sizeof(ack), 0, (const struct sockaddr *) &(client), clientLen) < 0 )
+    int size;
+
+    size = ack.serialize(buffer, BUFFERSZ);
+    if ( sendto(servSockfd, buffer, size, 0, (const struct sockaddr *) &(client), clientLen) < 0 )
         return -1;
 
     return 0;
@@ -31,8 +35,10 @@ int ServerSender::sendAns(sockaddr_in6 client, ans_t ans) {
     char buffer[BUFFERSZ];
     PacketAns packet(ans);
 
-    packet.serialize(buffer, BUFFERSZ);
-    if ( sendto(servSockfd, buffer, sizeof(packet), 0, (const struct sockaddr *) &(client), clientLen) < 0 )
+    int size;
+
+    size = packet.serialize(buffer, BUFFERSZ);
+    if ( sendto(servSockfd, buffer, size, 0, (const struct sockaddr *) &(client), clientLen) < 0 )
         return -1;
 
     return 0;
@@ -52,8 +58,10 @@ int ServerSender::sendLobby(ClientSession client) {
 
     PacketLobby rdy(players, ready);
 
-    rdy.serialize(buffer, BUFFERSZ);
-    if ( sendto(servSockfd, buffer, sizeof(rdy), 0, (const struct sockaddr *) &(client), clientLen) < 0 )
+    int size;
+
+    size = rdy.serialize(buffer, BUFFERSZ);
+    if ( sendto(servSockfd, buffer, size, 0, (const struct sockaddr *) &(client), clientLen) < 0 )
         return -1;
 
     return 0;
@@ -73,8 +81,10 @@ int ServerSender::sendGame(ClientSession client, Game& game) {
 
     PacketGame g(game.gamefield, game.bombs, game.players);
 
-    g.serialize(buffer, BUFFERSZ);
-    if ( sendto(servSockfd, buffer, sizeof(g), 0, (const struct sockaddr *) &(client), clientLen) < 0 )
+    int size;
+
+    size = g.serialize(buffer, BUFFERSZ);
+    if ( sendto(servSockfd, buffer, size, 0, (const struct sockaddr *) &(client), clientLen) < 0 )
         return -1;
 
     return 0;
