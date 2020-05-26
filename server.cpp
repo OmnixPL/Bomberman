@@ -100,7 +100,6 @@ void Server::gameLoop() {
     packet_t type;
     Game game(cs.size());
 
-    sender.setGame(game);
     auto when_started = clock_type::now(); 
     auto target_time = when_started;
     // main game loop
@@ -148,7 +147,7 @@ void Server::gameLoop() {
         std::this_thread::sleep_until(target_time);
         target_time += 10ms;
 
-        sender.sendGameAll();
+        sender.sendGameAll(game);
     }
 }
 

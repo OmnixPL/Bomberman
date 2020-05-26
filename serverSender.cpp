@@ -67,7 +67,7 @@ int ServerSender::sendLobbyAll() {
     return 0;
 }
 
-int ServerSender::sendGame(ClientSession client) {
+int ServerSender::sendGame(ClientSession client, Game& game) {
     socklen_t clientLen = sizeof(client);
     char buffer[BUFFERSZ];
 
@@ -80,9 +80,9 @@ int ServerSender::sendGame(ClientSession client) {
     return 0;
 }
 
-int ServerSender::sendGameAll() {
+int ServerSender::sendGameAll(Game& game) {
     for (ClientSession client : cs) {
-        if ( sendGame(client) < 0 )
+        if ( sendGame(client, game) < 0 )
             return -1;
     }
     return 0;
