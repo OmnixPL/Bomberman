@@ -1,4 +1,6 @@
 AUTH haselko
+READY
+READY
 UP
 DOWN
 DOWN

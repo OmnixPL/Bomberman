@@ -30,7 +30,7 @@ void Receiver::operator()()
             {
                 typeToBehaviour[type](packet);
             }
-        }
+        }        
         
     }
 }

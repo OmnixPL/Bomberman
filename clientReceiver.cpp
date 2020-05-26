@@ -22,7 +22,6 @@ std::shared_ptr<Packet> ClientReceiver::grabPacket() {
     std::shared_ptr<Packet> packet;
 
     if ( (readCount = recvfrom(mySockfd, buffer, BUFFERSZ, MSG_DONTWAIT, (struct sockaddr *) &targetAddr, &serverLen)) <= 0) {
-        //perror("No packets to read");
         return nullptr;
     }
 
