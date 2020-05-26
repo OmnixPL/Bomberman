@@ -150,7 +150,7 @@ void Server::gameLoop() {
             printf("\033c");
             std::cout << "TICK TIME: \t" << std::chrono::duration_cast<std::chrono::milliseconds>(current_timepoint - last_timepoint).count() << std::endl;
             game.printGamefield();
-
+            last_timepoint = current_timepoint;
             sender.sendGameAll(game);
         }
     }
