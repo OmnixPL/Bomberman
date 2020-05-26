@@ -152,6 +152,11 @@ Controller::Controller(
 {
 }
 
+int Controller::getNoSeconds()
+{
+    return noSeconds;
+}
+
 Controller::~Controller()
 {
 }
