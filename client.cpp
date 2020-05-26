@@ -6,6 +6,9 @@
 #include "client.h"
 #include "include/packets.h"
 
+using clock_type = std::chrono::high_resolution_clock;
+
+
 // grabs from server.cpp 
 void printPacket(std::shared_ptr<Packet> p);
 
@@ -45,12 +48,19 @@ void Client::run()
 
 void Client::runSequential()
 {   
+    auto last_timepoint = clock_type::now();
+    auto current_timepoint = clock_type::now();
     while (!isExitRequested || sender->isQueueNotEmpty())
     {
         sender->runOnce();
         receiver->runOnce();
-        controller->runOnce();
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        current_timepoint = clock_type::now();
+        if(current_timepoint - last_timepoint >= std::chrono::seconds(controller->getNoSeconds()))
+        {
+            std::cout<<"Controller running\n";
+            controller->runOnce();
+            last_timepoint = clock_type::now();
+        }
     }
     
 }
