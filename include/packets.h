@@ -4,6 +4,14 @@
 #include <string>
 #include <vector>
 
+#include "game.h"
+#include "enums.h"
+
+#define NO_BOMBS 2 
+#define NO_PLAYERS 4
+#define NO_MAP_FIELDS 121
+#define NO_MAP_BYTES 31
+
 // TODO: implement Action, Game
 
 enum packet_t {
@@ -15,7 +23,7 @@ enum packet_t {
     ANS, LOBBY, GAME
 };
 
-enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME};
+enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME, MOVE};
 
 class Packet {
     protected:
@@ -109,5 +117,50 @@ class PacketLobby : public Packet {
         
         int serialize(char* buffer, size_t len);
 };
+
+class PacketGame : public Packet
+{
+private:
+    char mapInfo[NO_MAP_FIELDS];
+    int bombPositions[NO_PLAYERS * NO_BOMBS][2];
+    float playerPositions[NO_PLAYERS][2];
+    bool isPlayerAlive[NO_PLAYERS];
+
+    int serializeMap(char*buffer, size_t len, int offset);
+    int serializeBombs(char * buffer, size_t len, int offset);
+    int serializePlayerPos(char * buffer, size_t len, int offset);
+    int serializePlayerAlive(char * buffer, size_t len, int offset);
+public:
+    PacketGame(char* buffer, size_t len);
+    PacketGame(const std::string user, 
+        char map[NO_MAP_FIELDS],
+        int bombPos[NO_PLAYERS * NO_BOMBS][2], 
+        float playerPos[NO_PLAYERS][2],
+        bool isPlayerAlive[NO_PLAYERS]);
+    PacketGame(field_t (&gamefield)[11][11], std::deque<Bomb>& bombs, Player (&players)[NO_PLAYERS]);
+    int serialize(char * buffer, size_t len);
+    int getBombPositionX(int player, int which);
+    int getBombPositionY(int player, int which);
+    float getPlayerPosition(int player, int coord);
+    bool getPlayerAlive(int player);
+    char * getMapInfo();
+};
+
+
+class PacketAction : public Packet
+{
+private:
+    action_t action;
+    bool bombPlacement;
+public:
+    PacketAction(char* buffer, size_t len);
+    PacketAction(const std::string user, action_t action, bool bombPlacement);
+    int serialize(char* buffer, size_t len);
+    action_t getAction();
+    bool getBombPlacement();
+};
+
+
+
 
 #endif

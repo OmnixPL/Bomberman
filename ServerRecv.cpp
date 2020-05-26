@@ -43,13 +43,14 @@ int ServerRecv::grabPacket() {
     else if ( type == DISCONNECT ) {
         packet = std::make_shared<PacketDisconnect>(buffer, readCount);
     } 
-    // TODO add action
+    else if ( type == ACTION) {
+        packet = std::make_shared<PacketAction>(buffer, readCount);
+    }
     else {
-        // TODO ignore?
-        packet = std::make_shared<Packet>(buffer, readCount);
+        return -2;
     }
     if (!isPacketOK(packet))
-        return -1;
+        return -3;
 
     PacketContainer packetC(cliaddr, packet);
     packets.push(std::move(packetC));

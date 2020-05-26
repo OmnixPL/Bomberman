@@ -9,12 +9,15 @@
 #include <arpa/inet.h>
 #include <vector>
 #include <queue>
+#include <chrono>
+#include <thread>
 
 #include "session.h"
 #include "lobby.h"
 #include "ServerRecv.h"
 #include "serverSender.h"
 #include "packetContainer.h"
+#include "game.h"
 
 #define SERV_PORT 57312
 #define BUFFERSZ 512
@@ -38,8 +41,12 @@ class Server {
         ServerRecv receiver = ServerRecv(servSockfd, packets, waitingForAck, cs);
         ServerSender sender = ServerSender(servSockfd, cs);
 
+        void lobbyLoop();
+        bool usePacket();
+        void gameLoop();
     public:
         Server(int port, std::string password = "");
+        void start() { lobbyLoop(); };
         int testCon();
         void testLoop();
         int selfTest();
