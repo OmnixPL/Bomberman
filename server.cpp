@@ -1,6 +1,9 @@
 #include "include/server.h"
 #include "include/packets.h"
 
+using namespace std::literals;
+using clock_type = std::chrono::high_resolution_clock;
+
 void printPacket(std::shared_ptr<Packet> p) {
     std::cout << "Incoming packet type: " << p->getType() << std::endl; 
     std::cout << "User: " << p->getUser() << std::endl;
@@ -20,6 +23,131 @@ Server::Server(int port, std::string ppassword) : password(ppassword) {
     if (bind(servSockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0 ) { 
         perror("binding failed"); 
         return; 
+    }
+}
+
+void Server::lobbyLoop() {
+    auto target_time = clock_type::now() + seconds(1);
+    while (true) {
+        while (usePacket());
+
+        sh.checkTimeouts();
+        
+        if (target_time < clock_type::now()) {
+            sender.sendLobbyAll();
+            target_time = clock_type::now() + seconds(1);
+        }
+
+        if (lobby.isAllReady())
+            gameLoop();
+    }
+}
+
+bool Server::usePacket() {
+    packet_t type;
+
+    receiver.grabPacket();
+    if ( packets.empty() )
+        return false;
+    type = packets.front().packet->getType();
+    if ( type == ACK) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketAck> ack = std::dynamic_pointer_cast<PacketAck>(p.packet);
+
+        printPacket(ack);
+        std::cout << "noAck: " << ack->getNoAck() << std::endl << std::endl;
+    }
+    else if ( type == AUTH) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketAuth> auth = std::dynamic_pointer_cast<PacketAuth>(p.packet);
+        ans_t answer;
+        answer = sh.addNewClient(p.addr, *auth);
+        sender.sendAns(p.addr, answer);
+        sender.sendLobbyAll();
+    }
+    else if ( type == RDY) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketRdy> rdy = std::dynamic_pointer_cast<PacketRdy>(p.packet);
+
+        lobby.clientReady(p.addr, *rdy);
+        sender.sendAck(p.addr, rdy->getNo());
+        sender.sendLobbyAll();
+    }
+    else if ( type == RENEW) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketRenew> renew = std::dynamic_pointer_cast<PacketRenew>(p.packet);
+
+        sh.renewClient(p.addr, *renew);
+    }
+    else if ( type == DISCONNECT) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketDisconnect> dc = std::dynamic_pointer_cast<PacketDisconnect>(p.packet);
+
+        sh.removeClient(p.addr, *dc);
+    }
+    else {
+        packets.pop();
+    }
+    return true;
+}
+
+void Server::gameLoop() {
+    packet_t type;
+    Game game(cs.size());
+
+    auto when_started = clock_type::now(); 
+    auto target_time = when_started;
+    // main game loop
+    while (game.isInProgress()) {
+        target_time += milliseconds(TICKTIME);
+        // grab all packets
+        while (true) {
+            receiver.grabPacket();
+            if (packets.empty())
+                break;
+
+            type = packets.front().packet->getType();
+            if (type == ACTION) {
+                PacketContainer p = std::move(packets.front());
+                packets.pop();
+                std::shared_ptr<PacketAction> act = std::dynamic_pointer_cast<PacketAction>(p.packet);
+
+
+                ClientSession client(p.addr, act->getUser(), 0);
+                int i;
+                for (i = 0; i < MAX_PLAYERS; i++) {
+                    if (cs[i] == client)
+                        break;
+                }
+
+                if (i == MAX_PLAYERS)
+                    continue;
+
+                if (act->getNo() < cs[i].lastActive)
+                    continue;
+
+                if (act->getBombPlacement() == true)
+                    game.placeBomb(i);
+
+                game.updateIntent(i, act->getAction());
+
+                cs[i].lastActive = act->getNo();
+            }
+            else {
+                packets.pop();
+            }
+
+        }
+        game.tick();
+        std::this_thread::sleep_until(target_time);
+        target_time += 10ms;
+
+        // TODO send this
     }
 }
 
