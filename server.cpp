@@ -127,18 +127,14 @@ void Server::gameLoop() {
                             break;
                     }
 
-                    if (i == MAX_PLAYERS)
-                        continue;
+                    if (i != MAX_PLAYERS && act->getNo() > cs[i].lastActive) {
+                        if (act->getBombPlacement() == true)
+                            game.placeBomb(i);
 
-                    if (act->getNo() < cs[i].lastActive)
-                        continue;
+                        game.updateIntent(i, act->getAction());
 
-                    if (act->getBombPlacement() == true)
-                        game.placeBomb(i);
-
-                    game.updateIntent(i, act->getAction());
-
-                    cs[i].lastActive = act->getNo();
+                        cs[i].lastActive = act->getNo();
+                    }
                 }
                 else {
                     packets.pop();
