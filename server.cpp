@@ -35,8 +35,10 @@ void Server::lobbyLoop() {
         
         if (target_time < clock_type::now()) {
             sender.sendLobbyAll();
-            if (lobby.isAllReady())
+            if (lobby.isAllReady()) {
                 gameLoop();
+                lobby.unreadyAll();
+            }
             target_time = clock_type::now() + seconds(3);
         }
     }
@@ -145,7 +147,7 @@ void Server::gameLoop() {
 
             game.tick();
             std::this_thread::sleep_until(target_time);
-            target_time += 10ms;
+            target_time += milliseconds(TICKTIME);
             current_timepoint = clock_type::now(); 
             printf("\033c");
             std::cout << "TICK TIME: \t" << std::chrono::duration_cast<std::chrono::milliseconds>(current_timepoint - last_timepoint).count() << std::endl;

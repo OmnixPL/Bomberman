@@ -8,4 +8,5 @@ class Lobby {
         Lobby(std::vector<ClientSession>& ccs) : cs(ccs) {};
         int clientReady(sockaddr_in6 addr, PacketRdy& rdy);
         bool isAllReady();
+        int unreadyAll();
 };
