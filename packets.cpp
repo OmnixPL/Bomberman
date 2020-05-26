@@ -188,6 +188,16 @@ PacketAction::PacketAction(char* buffer, size_t len) : Packet(buffer, len)
 
 PacketAction::PacketAction(const std::string user, action_t action, bool bombPlacement) : Packet(packet_t::ACTION, user), action(action), bombPlacement(bombPlacement){}
 
+action_t PacketAction::getAction()
+{
+    return this->action;
+}
+
+bool PacketAction::getBombPlacement()
+{
+    return bombPlacement;
+}
+
 PacketGame::PacketGame(const std::string user, 
         char map[NO_MAP_FIELDS],
         int bombPos[NO_PLAYERS * NO_BOMBS][2], 
