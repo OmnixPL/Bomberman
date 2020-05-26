@@ -66,3 +66,24 @@ int ServerSender::sendLobbyAll() {
     }
     return 0;
 }
+
+int ServerSender::sendGame(ClientSession client) {
+    socklen_t clientLen = sizeof(client);
+    char buffer[BUFFERSZ];
+
+    PacketGame g(game.gamefield, game.bombs, game.players);
+
+    g.serialize(buffer, BUFFERSZ);
+    if ( sendto(servSockfd, buffer, sizeof(g), 0, (const struct sockaddr *) &(client), clientLen) < 0 )
+        return -1;
+
+    return 0;
+}
+
+int ServerSender::sendGameAll() {
+    for (ClientSession client : cs) {
+        if ( sendGame(client) < 0 )
+            return -1;
+    }
+    return 0;
+}
