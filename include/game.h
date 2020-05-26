@@ -43,9 +43,13 @@ class Player {
         action_t nextDirection;
 
         Player() {
+
             alive = false;
             bombsPlaced = 0;
             walking = false;
+            toMove = 0;
+            direction = NONE;
+            nextDirection = NONE;
         }
 };
 

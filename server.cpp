@@ -35,11 +35,12 @@ void Server::lobbyLoop() {
         
         if (target_time < clock_type::now()) {
             sender.sendLobbyAll();
-            target_time = clock_type::now() + seconds(1);
+            if (lobby.isAllReady()) {
+                gameLoop();
+                lobby.unreadyAll();
+            }
+            target_time = clock_type::now() + seconds(3);
         }
-
-        if (lobby.isAllReady())
-            gameLoop();
     }
 }
 
@@ -73,6 +74,7 @@ bool Server::usePacket() {
         std::shared_ptr<PacketRdy> rdy = std::dynamic_pointer_cast<PacketRdy>(p.packet);
 
         lobby.clientReady(p.addr, *rdy);
+        sh.renewClient(p.addr, *rdy);
         sender.sendAck(p.addr, rdy->getNo());
         sender.sendLobbyAll();
     }
@@ -100,54 +102,55 @@ void Server::gameLoop() {
     packet_t type;
     Game game(cs.size());
 
-    auto when_started = clock_type::now(); 
-    auto target_time = when_started;
+
+    auto last_timepoint = clock_type::now(); 
+    auto current_timepoint = clock_type::now(); 
+    auto target_time = clock_type::now(); 
     // main game loop
     while (game.isInProgress()) {
         target_time += milliseconds(TICKTIME);
         // grab all packets
         while (true) {
             receiver.grabPacket();
-            if (packets.empty())
-                break;
-
-            type = packets.front().packet->getType();
-            if (type == ACTION) {
-                PacketContainer p = std::move(packets.front());
-                packets.pop();
-                std::shared_ptr<PacketAction> act = std::dynamic_pointer_cast<PacketAction>(p.packet);
+            if (!packets.empty()) {
+                type = packets.front().packet->getType();
+                if (type == ACTION) {
+                    PacketContainer p = std::move(packets.front());
+                    packets.pop();
+                    std::shared_ptr<PacketAction> act = std::dynamic_pointer_cast<PacketAction>(p.packet);
 
 
-                ClientSession client(p.addr, act->getUser(), 0);
-                int i;
-                for (i = 0; i < MAX_PLAYERS; i++) {
-                    if (cs[i] == client)
-                        break;
+                    ClientSession client(p.addr, act->getUser(), 0);
+                    int i;
+                    for (i = 0; i < MAX_PLAYERS; i++) {
+                        if (cs[i] == client)
+                            break;
+                    }
+
+                    if (i != MAX_PLAYERS && act->getNo() > cs[i].lastActive) {
+                        if (act->getBombPlacement() == true)
+                            game.placeBomb(i);
+
+                        game.updateIntent(i, act->getAction());
+
+                        cs[i].lastActive = act->getNo();
+                    }
                 }
-
-                if (i == MAX_PLAYERS)
-                    continue;
-
-                if (act->getNo() < cs[i].lastActive)
-                    continue;
-
-                if (act->getBombPlacement() == true)
-                    game.placeBomb(i);
-
-                game.updateIntent(i, act->getAction());
-
-                cs[i].lastActive = act->getNo();
-            }
-            else {
-                packets.pop();
+                else {
+                    packets.pop();
+                }
             }
 
+            game.tick();
+            std::this_thread::sleep_until(target_time);
+            target_time += milliseconds(TICKTIME);
+            current_timepoint = clock_type::now(); 
+            printf("\033c");
+            std::cout << "TICK TIME: \t" << std::chrono::duration_cast<std::chrono::milliseconds>(current_timepoint - last_timepoint).count() << std::endl;
+            game.printGamefield();
+            last_timepoint = current_timepoint;
+            sender.sendGameAll(game);
         }
-        game.tick();
-        std::this_thread::sleep_until(target_time);
-        target_time += 10ms;
-
-        sender.sendGameAll(game);
     }
 }
 

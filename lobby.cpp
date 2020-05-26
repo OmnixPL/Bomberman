@@ -25,3 +25,10 @@ bool Lobby::isAllReady() {
     std::cout << "Everyone is ready" << std::endl;
     return true;
 }
+
+int Lobby::unreadyAll() {
+    for (unsigned int i = 0; i < cs.size(); i++) {
+        cs[i].rdy = false;
+    }
+    return 0;
+}
