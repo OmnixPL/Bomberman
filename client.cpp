@@ -9,7 +9,13 @@
 // grabs from server.cpp 
 void printPacket(std::shared_ptr<Packet> p);
 
-Client::Client(int version, char* addr, int port, std::string username, std::string pathToMoves) {
+Client::Client(
+            int version, 
+            char* addr, 
+            int port, 
+            std::string username, 
+            std::string pathToMoves,
+            int noSecondsBetweenMoves) {
     servaddr.sin6_family = AF_INET6; /* change for ipv6 */
     inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
     servaddr.sin6_port = htons(port);
@@ -23,26 +29,27 @@ Client::Client(int version, char* addr, int port, std::string username, std::str
     
     sender = new ClientSender(cliSockfd, servaddr, queueMutex, &isExitRequested);
     receiver = new ClientReceiver(cliSockfd, servaddr, &isExitRequested);
-    controller = new Controller(pathToMoves,sender, model, &isExitRequested);
+    controller = new Controller(pathToMoves,sender, model, &isExitRequested, noSecondsBetweenMoves);
 }
 
 void Client::run()
 {
-    std::vector<std::shared_ptr<Packet> > v = 
-    {
-        std::make_shared<PacketAck>(101, "testUser"),
-        std::make_shared<PacketAck>(102, "testUser"),
-        std::make_shared<PacketAck>(103, "testUser")
-    };
-    for( std::shared_ptr<Packet> pointer : v)
-    {
-        sender->addToQueue(pointer);
-    }
     std::thread senderThread(&ClientSender::operator(), sender);
-    std::this_thread::sleep_for(std::chrono::seconds(4));
+    std::thread receiverThread(&ClientReceiver::operator(), receiver);
     std::thread controllerThread(&Controller::operator(), controller);
-    senderThread.join();
-    controllerThread.join();
+    if(senderThread.joinable())
+    {
+        senderThread.join();
+    }
+    if(receiverThread.joinable())
+    {
+        receiverThread.join();
+    }
+    if (controllerThread.joinable())
+    {
+        controllerThread.join();
+    }
+    
 }
 
 // use with testCon in server

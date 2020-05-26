@@ -16,14 +16,22 @@ ClientSender::~ClientSender() {}
 
 void ClientSender::operator()()
 {
-    while (!(*isExitRequested))
+    while (!(*isExitRequested) || isQueueNotEmpty())
     {
-        std::cout<<"Client: sending packet\n";
+        
         std::shared_ptr<Packet> p = popFromQueue();
         if(p != nullptr)
         {
             sendToServer(p);
-        }        
+            std::cout<<"Client: sending packet\n";
+            if(p->getType() == packet_t::DISCONNECT)
+                break;
+        }
+        else
+        {
+            std::cout<<"ClientSender: popping packet returned nullptr";
+        }
+                
     }
 }
 
@@ -36,7 +44,7 @@ std::shared_ptr<Packet> ClientSender::popFromQueue()
 {
     std::unique_lock<std::mutex> lck(*queueMutex);
     // wait until queue is not empty
-    condVar.wait_for(lck, std::chrono::seconds(30), std::bind(&ClientSender::isQueueNotEmpty, this));
+    condVar.wait_for(lck, std::chrono::seconds(5), std::bind(&ClientSender::isQueueNotEmpty, this));
     // only in case of exit request
     if(packets.empty())
         return nullptr;

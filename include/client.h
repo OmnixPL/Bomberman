@@ -29,7 +29,13 @@ class Client {
         Controller * controller;
         bool isExitRequested = false;
     public:
-        Client(int version, char* addr, int port, std::string username, std::string pathToMoves);
+        Client(
+            int version, 
+            char* addr, 
+            int port, 
+            std::string username, 
+            std::string pathToMoves,
+            int noSecondsBetweenMoves);
         int test();
         void testSender();
         void testLoop();

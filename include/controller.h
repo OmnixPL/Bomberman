@@ -12,8 +12,15 @@ private:
     Model * model;
     ClientSender * sender;
     bool * isExitRequested;
+    int noSeconds;
 public:
-    Controller(std::string filepath, ClientSender * sender, Model * model, bool * exitPointer);
+    Controller(
+        std::string filepath, 
+        ClientSender * sender, 
+        Model * model, 
+        bool * exitPointer,
+        int noSeconds
+    );
     ~Controller();
     void operator()();
 };

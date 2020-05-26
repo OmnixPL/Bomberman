@@ -13,7 +13,14 @@ int main(int argc, char *argv[])
             //server.selfTest();
         }
         else if (argc > 4 && !strcmp(argv[1], "client")) {
-            Client client(atoi(argv[2]), argv[3], atoi(argv[4]), argv[5], argv[6]);
+            std::cout<<"argc == "<<argc<<std::endl;
+            Client client(
+                atoi(argv[2]), 
+                argv[3], 
+                atoi(argv[4]), 
+                argv[5], 
+                argv[6], 
+                atoi(argv[7]));
             client.testLoop();
         }
     }
