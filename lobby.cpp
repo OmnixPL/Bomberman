@@ -13,7 +13,7 @@ int Lobby::clientReady(sockaddr_in6 addr, PacketRdy& rdy) {
 }
 
 bool Lobby::isAllReady() {
-    if (cs.size() == 0)
+    if (cs.size() < 2)
         return false;
 
     for (auto tempcs : cs) {

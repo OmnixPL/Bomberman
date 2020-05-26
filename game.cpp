@@ -14,7 +14,7 @@ void Game::tick() {
     // explode bombs
     while (bombs.front().time < system_clock::now()) {
         explodeBomb(bombs.front());
-        bombs.pop();
+        bombs.pop_front();
     }
 }
 
@@ -137,7 +137,7 @@ void Game::placeBomb(int player, Pos p) {
 
     gamefield[(int)p.x][(int)p.y] = BOMB;
     players[player].bombsPlaced++;
-    bombs.push(Bomb(p.x, p.y));
+    bombs.push_back(Bomb(p.x, p.y));
     return;
 }
 

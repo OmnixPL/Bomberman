@@ -41,9 +41,12 @@ class Server {
         ServerRecv receiver = ServerRecv(servSockfd, packets, waitingForAck, cs);
         ServerSender sender = ServerSender(servSockfd, cs);
 
+        void lobbyLoop();
+        bool usePacket();
+        void gameLoop();
     public:
         Server(int port, std::string password = "");
-        void game();
+        void start() { lobbyLoop(); };
         int testCon();
         void testLoop();
         int selfTest();

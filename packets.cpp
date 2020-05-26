@@ -188,6 +188,49 @@ PacketAction::PacketAction(char* buffer, size_t len) : Packet(buffer, len)
 
 PacketAction::PacketAction(const std::string user, action_t action, bool bombPlacement) : Packet(packet_t::ACTION, user), action(action), bombPlacement(bombPlacement){}
 
+action_t PacketAction::getAction()
+{
+    return this->action;
+}
+
+bool PacketAction::getBombPlacement()
+{
+    return bombPlacement;
+}
+
+PacketGame::PacketGame(field_t (&gamefield)[11][11], std::deque<Bomb>& bombs, Player (&players)[NO_PLAYERS]) : Packet{GAME, ""} {
+    // map
+    for(int y = 0; y < 11; y++)
+    {
+        for(int x = 0; x < 11; x++)
+        mapInfo[y*11+x] = (char)gamefield[x][y];
+    }
+    // bombs
+    unsigned int i;
+    for(i = 0; i < bombs.size(); i++)
+    {  
+        bombPositions[i][0] = bombs[i].x;
+        bombPositions[i][1] = bombs[i].y;
+    }
+    for( ; i < NO_PLAYERS * NO_BOMBS; i++) {
+        bombPositions[i][0] = 0xf;
+        bombPositions[i][1] = 0xf;
+    }
+
+    // player pos
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        playerPositions[i][0] = players[i].pos.x;
+        playerPositions[i][1] = players[i].pos.y;
+    }
+
+    // player state
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        isPlayerAlive[i] = players[i].alive;
+    }
+}
+
 PacketGame::PacketGame(const std::string user, 
         char map[NO_MAP_FIELDS],
         int bombPos[NO_PLAYERS * NO_BOMBS][2], 

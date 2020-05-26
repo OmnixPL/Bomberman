@@ -26,7 +26,77 @@ Server::Server(int port, std::string ppassword) : password(ppassword) {
     }
 }
 
-void Server::game() {
+void Server::lobbyLoop() {
+    auto target_time = clock_type::now() + seconds(1);
+    while (true) {
+        while (usePacket());
+
+        sh.checkTimeouts();
+        
+        if (target_time < clock_type::now()) {
+            sender.sendLobbyAll();
+            target_time = clock_type::now() + seconds(1);
+        }
+
+        if (lobby.isAllReady())
+            gameLoop();
+    }
+}
+
+bool Server::usePacket() {
+    packet_t type;
+
+    receiver.grabPacket();
+    if ( packets.empty() )
+        return false;
+    type = packets.front().packet->getType();
+    if ( type == ACK) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketAck> ack = std::dynamic_pointer_cast<PacketAck>(p.packet);
+
+        printPacket(ack);
+        std::cout << "noAck: " << ack->getNoAck() << std::endl << std::endl;
+    }
+    else if ( type == AUTH) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketAuth> auth = std::dynamic_pointer_cast<PacketAuth>(p.packet);
+        ans_t answer;
+        answer = sh.addNewClient(p.addr, *auth);
+        sender.sendAns(p.addr, answer);
+        sender.sendLobbyAll();
+    }
+    else if ( type == RDY) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketRdy> rdy = std::dynamic_pointer_cast<PacketRdy>(p.packet);
+
+        lobby.clientReady(p.addr, *rdy);
+        sender.sendAck(p.addr, rdy->getNo());
+        sender.sendLobbyAll();
+    }
+    else if ( type == RENEW) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketRenew> renew = std::dynamic_pointer_cast<PacketRenew>(p.packet);
+
+        sh.renewClient(p.addr, *renew);
+    }
+    else if ( type == DISCONNECT) {
+        PacketContainer p = std::move(packets.front());
+        packets.pop();
+        std::shared_ptr<PacketDisconnect> dc = std::dynamic_pointer_cast<PacketDisconnect>(p.packet);
+
+        sh.removeClient(p.addr, *dc);
+    }
+    else {
+        packets.pop();
+    }
+    return true;
+}
+
+void Server::gameLoop() {
     packet_t type;
     Game game(cs.size());
 

@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "game.h"
+#include "enums.h"
+
 #define NO_BOMBS 2 
 #define NO_PLAYERS 4
 #define NO_MAP_FIELDS 121
@@ -18,14 +21,6 @@ enum packet_t {
     ACTION,
     // server to client
     ANS, LOBBY, GAME
-};
-
-enum action_t {
-    NONE,
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT
 };
 
 enum ans_t {OK, BAD_PASSWORD, FULL, TIMEOUT, BAD_USERNAME, MOVE};
@@ -142,6 +137,7 @@ public:
         int bombPos[NO_PLAYERS * NO_BOMBS][2], 
         float playerPos[NO_PLAYERS][2],
         bool isPlayerAlive[NO_PLAYERS]);
+    PacketGame(field_t (&gamefield)[11][11], std::deque<Bomb>& bombs, Player (&players)[NO_PLAYERS]);
     int serialize(char * buffer, size_t len);
     int getBombPositionX(int player, int which);
     int getBombPositionY(int player, int which);
