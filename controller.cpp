@@ -134,6 +134,7 @@ void Controller::runOnce()
         {
             std::cout<<"Ignoring invalid command " << command;
         }
+        std::this_thread::sleep_for(std::chrono::seconds(noSeconds));
     }
 }
 
