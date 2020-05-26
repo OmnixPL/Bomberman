@@ -230,16 +230,10 @@ void Server::testLoop() {
 
 void Server::test3()
 {
-    int readCount;
-    char buffer[BUFFERSZ];
-    char response[] = "Pozdrawiam.";
-    char ip[INET6_ADDRSTRLEN];
-    
-    readCount = recvfrom(servSockfd, buffer, BUFFERSZ, 0, (struct sockaddr *) &cliaddr, &len);
-    buffer[readCount] = '\0';
-    printf("Client IP: %s MSG: %s\n", inet_ntop(AF_INET6, &cliaddr.sin6_addr, ip, INET6_ADDRSTRLEN), buffer);
-    sendto(servSockfd, (const char *)response, strlen(response), MSG_CONFIRM, (const struct sockaddr *) &cliaddr, len); 
-    printf("Hello message sent.\n");
+    for(int i = 0; i < 10; i++)
+    {
+        ;
+    }
 }
 
 // ********************************** OLD TESTS ***********************

@@ -4,34 +4,56 @@
 #include "receiver.h"
 #include "client.h"
 
-Receiver::Receiver(int& sockfd, char* address, int port, struct timeval timeout) : 
-    sockfd(sockfd), 
-    timeout(timeout)
-{
-    addr.sin6_family = AF_INET6;
-    inet_pton(AF_INET6, address, &addr.sin6_addr);
-    addr.sin6_port = htons(port);
-}
+Receiver::Receiver(int& cliSockfd, sockaddr_in6& servaddr, bool * exitPointer) : 
+    mySockfd(cliSockfd),
+    targetAddr(servaddr),
+    serverLen(sizeof(servaddr)),
+    isExitRequested(exitPointer)
+{}
 
 Receiver::~Receiver(){std::cout<<"Destroying receiver object";};
 
 void Receiver::operator()()
 {
-    char buffer[BUFFERSZ];
-    recvfrom(sockfd, buffer, BUFFERSZ, 0, (struct sockaddr*) &addr, (socklen_t *)sizeof(addr));
-    packet_t typeOfPacketReceived = Packet::extractType(buffer, BUFFERSZ);
-    while (!isExitRequested)
+    while (!(*isExitRequested))
     {
-        // if there's no such type in map, perform default behaviour
-        if(typeToBehaviour.find(typeOfPacketReceived) == typeToBehaviour.end())
+        std::shared_ptr<Packet> packet = grabPacket();
+        if(packet != nullptr)
         {
-            defaultBehaviour(buffer, BUFFERSZ);
+            packet_t type = packet->getType();
+            // no behaviour for such type
+            if(typeToBehaviour.find(type) == typeToBehaviour.end())
+            {
+                defaultBehaviour(packet);
+            }
+            else
+            {
+                typeToBehaviour[type](packet);
+            }
+        }        
+        
+    }
+}
+
+void Receiver::runOnce()
+{
+    if(*isExitRequested)
+    {
+        return;
+    }
+    std::shared_ptr<Packet> packet = grabPacket();
+    if(packet != nullptr)
+    {
+        packet_t type = packet->getType();
+        // no behaviour for such type
+        if(typeToBehaviour.find(type) == typeToBehaviour.end())
+        {
+            defaultBehaviour(packet);
         }
         else
         {
-            typeToBehaviour[typeOfPacketReceived](buffer, BUFFERSZ);
+            typeToBehaviour[type](packet);
         }
-    }
-    
-    
+    }    
+
 }

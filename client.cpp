@@ -1,5 +1,7 @@
 #include <iostream>
 #include <thread>
+#include <vector>
+#include <chrono>
 
 #include "client.h"
 #include "include/packets.h"
@@ -7,18 +9,58 @@
 // grabs from server.cpp 
 void printPacket(std::shared_ptr<Packet> p);
 
-Client::Client(int version, char* addr, int port) {
+Client::Client(
+            int version, 
+            char* addr, 
+            int port, 
+            std::string username, 
+            std::string pathToMoves,
+            int noSecondsBetweenMoves) {
     servaddr.sin6_family = AF_INET6; /* change for ipv6 */
     inet_pton(AF_INET6, addr, &servaddr.sin6_addr);
     servaddr.sin6_port = htons(port);
-
-    timeout.tv_sec = 2 * 60; // 2 min timeout for socket
-    timeout.tv_usec = 0;
 
     if ((cliSockfd = socket(AF_INET6, SOCK_DGRAM, 0)) < 0) {
         perror("socket creation failed");
         return;
     }
+
+    model = new Model(username);
+    
+    sender = new ClientSender(cliSockfd, servaddr, queueMutex, &isExitRequested);
+    receiver = new ClientReceiver(cliSockfd, servaddr, &isExitRequested);
+    controller = new Controller(pathToMoves,sender, model, &isExitRequested, noSecondsBetweenMoves);
+}
+
+void Client::run()
+{
+    sender->sendAuth("Haselko");
+    sender->sendAck(567);
+    sender->sendRdy(true);
+    sender->sendRenew();
+    std::thread receiverThread(&ClientReceiver::operator(), receiver);
+    // std::thread senderThread(&ClientSender::operator(), sender);
+    // std::thread controllerThread(&Controller::operator(), controller);
+    // senderThread.join();
+    receiverThread.join();
+    // controllerThread.join();
+    
+}
+
+void Client::runSequential()
+{
+    sender->sendAuth("Haselko");
+    sender->sendAck(567);
+    sender->sendRdy(true);
+    sender->sendRenew();
+    while (!isExitRequested || sender->isQueueNotEmpty())
+    {
+        sender->runOnce();
+        receiver->runOnce();
+        controller->runOnce();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
+    
 }
 
 // use with testCon in server
@@ -35,13 +77,13 @@ void Client::testSender() {
 
     Packet::userDefault = "TUTU";
 
-    sender.sendAuth(pass);
+    sender->sendAuth(pass);
     usleep(300000); 
 
-    sender.sendAck(567);
+    sender->sendAck(567);
     usleep(300000); 
 
-    sender.sendRdy(true);
+    sender->sendRdy(true);
     usleep(300000); 
     
     readCount = recvfrom(cliSockfd, buffer, BUFFERSZ, 0, (struct sockaddr *) &servaddr, &len);
@@ -51,10 +93,10 @@ void Client::testSender() {
     std::cout << "NO: " << ack.getNo() << std::endl;
     std::cout << "noAck: " << ack.getNoAck() << std::endl << std::endl;
 
-    sender.sendRenew();
+    sender->sendRenew();
     usleep(300000); 
     
-    sender.sendDisconnect();
+    sender->sendDisconnect();
 
     readCount = recvfrom(cliSockfd, buffer, BUFFERSZ, 0, (struct sockaddr *) &servaddr, &len);
     PacketAns ans(buffer, BUFFERSZ);
@@ -83,32 +125,32 @@ void Client::testLoop() {
     std::string pass = "Haselko";
     Packet::userDefault = "TUTU";
 
-    sender.sendAuth(pass);
+    sender->sendAuth(pass);
     usleep(300000); 
 
     // usually you should check the type (and if any packets actually exists!) but now its expected to be ans
-    std::shared_ptr<PacketAns> ans = std::dynamic_pointer_cast<PacketAns>(receiver.grabPacket());
+    std::shared_ptr<PacketAns> ans = std::dynamic_pointer_cast<PacketAns>(receiver->grabPacket());
     printPacket(ans);
     std::cout << "Ans: " << ans->getAns() << std::endl << std::endl;
 
-    sender.sendAck(567);
+    sender->sendAck(567);
     usleep(300000); 
 
-    sender.sendRdy(true);
+    sender->sendRdy(true);
     usleep(300000); 
     
-    std::shared_ptr<PacketAck> ack = std::dynamic_pointer_cast<PacketAck>(receiver.grabPacket()); 
+    std::shared_ptr<PacketAck> ack = std::dynamic_pointer_cast<PacketAck>(receiver->grabPacket()); 
     printPacket(ack);
     std::cout << "noAck: " << ack->getNoAck() << std::endl << std::endl;
 
-    sender.sendRenew();
+    sender->sendRenew();
     usleep(300000); 
     
     // commented out to see working lobby
     // sender.sendDisconnect();
 
     std::shared_ptr<PacketLobby> l; 
-    while ( (l = std::dynamic_pointer_cast<PacketLobby>(receiver.grabPacket())) == nullptr )
+    while ( (l = std::dynamic_pointer_cast<PacketLobby>(receiver->grabPacket())) == nullptr )
         ;
     printPacket(l);
     for ( size_t i = 0; i < l->players.size(); i++) {

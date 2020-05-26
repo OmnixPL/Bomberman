@@ -5,6 +5,9 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <queue>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 #include "packets.h"
 
 class ClientSender
@@ -13,18 +16,26 @@ private:
     int& sockfd;
     sockaddr_in6& serverAddr;
     socklen_t serverLen;
+    std::mutex * queueMutex;
+    bool * isExitRequested;
     
-    void sendToServer(Packet p);
+    void sendToServer(std::shared_ptr<Packet> p);
+    
+    std::condition_variable condVar;
 public:
-    std::queue<Packet> packets;
-    ClientSender(int& sockfd, char* address, int port);
-    ClientSender(int& sockfd, sockaddr_in6& serverAddr);
+    std::queue<std::shared_ptr<Packet> > packets;
+    bool isQueueNotEmpty();
+    std::shared_ptr<Packet> popFromQueue();
+    void addToQueue(std::shared_ptr<Packet> p);
+
+    ClientSender(int& sockfd, sockaddr_in6& serverAddr, std::mutex &mutex, bool * exitPointer);
     int sendAck(int noAck);
     int sendAuth(std::string password);
     int sendRdy(bool ready);
     int sendRenew();
     int sendDisconnect();
     void operator()();
+    void runOnce();
     ~ClientSender();
 };
 

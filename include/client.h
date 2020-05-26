@@ -12,6 +12,8 @@
 
 #include "clientReceiver.h"
 #include "clientSender.h"
+#include <model.h>
+#include <controller.h>
 
 #define BUFFERSZ 512
 
@@ -20,15 +22,25 @@ class Client {
         int cliSockfd = -1;
         sockaddr_in6 servaddr = {}, cliaddr = {};
         socklen_t len = sizeof(servaddr); // possibly can be deleted?
-        ClientReceiver receiver = ClientReceiver(cliSockfd, servaddr);
-        ClientSender sender = ClientSender(cliSockfd, servaddr);
-
-        struct timeval timeout;
+        std::mutex queueMutex;
+        ClientSender * sender;
+        ClientReceiver *  receiver;
+        Model * model;
+        Controller * controller;
+        bool isExitRequested = false;
     public:
-        Client(int version, char* addr, int port);
+        Client(
+            int version, 
+            char* addr, 
+            int port, 
+            std::string username, 
+            std::string pathToMoves,
+            int noSecondsBetweenMoves);
         int test();
         void testSender();
         void testLoop();
+        void run();
+        void runSequential();
         // void test2();
         // void test3();
         // void test4();

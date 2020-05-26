@@ -1,7 +1,14 @@
 #include <clientSender.h>
 #include <client.h>
+#include <condition_variable>
+#include <mutex>
 
-ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr) : sockfd(ssockfd), serverAddr(sserverAddr) {
+ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr, std::mutex &mutex, bool * exitPointer) : 
+    sockfd(ssockfd), 
+    serverAddr(sserverAddr),
+    queueMutex(&mutex),
+    isExitRequested(exitPointer)
+{
     serverLen = sizeof(serverAddr);
 }
 
@@ -9,22 +16,67 @@ ClientSender::~ClientSender() {}
 
 void ClientSender::operator()()
 {
-    packets.push(PacketAck(4, "testUser"));
-
-    while (!packets.empty())
+    while (!(*isExitRequested) || isQueueNotEmpty())
     {
-        sendToServer(packets.front());
-        packets.pop();
+        
+        std::shared_ptr<Packet> p = popFromQueue();
+        if(p != nullptr)
+        {
+            sendToServer(p);
+            std::cout<<"Client: sending packet\n";
+            if(p->getType() == packet_t::DISCONNECT)
+                break;
+        }
+        else
+        {
+            std::cout<<"ClientSender: popping packet returned nullptr";
+        }
+                
     }
-    
 }
 
-void ClientSender::sendToServer(Packet p)
+void ClientSender::runOnce()
+{
+    if(!(*isExitRequested) || isQueueNotEmpty() )
+    {
+        if(isQueueNotEmpty())
+        {
+            std::shared_ptr<Packet> p = packets.front();
+            packets.pop();
+            sendToServer(p);
+        }
+    }
+}
+
+bool ClientSender::isQueueNotEmpty()
+{
+    return !packets.empty();
+}
+
+std::shared_ptr<Packet> ClientSender::popFromQueue()
+{
+    std::unique_lock<std::mutex> lck(*queueMutex);
+    // wait until queue is not empty
+    condVar.wait_for(lck, std::chrono::seconds(5), std::bind(&ClientSender::isQueueNotEmpty, this));
+    // only in case of exit request
+    if(packets.empty())
+        return nullptr;
+    std::shared_ptr<Packet> result = packets.front();
+    packets.pop();
+    return result;
+}
+void ClientSender::addToQueue(std::shared_ptr<Packet> p)
+{
+    std::lock_guard<std::mutex>(*queueMutex);
+    packets.push(p);
+    condVar.notify_one();
+}
+
+void ClientSender::sendToServer(std::shared_ptr<Packet> p)
 {
     char b[BUFFERSZ];
-    p.serialize(b, BUFFERSZ);
-    std::cout<<"Send packet: "<<b<<std::endl;
-    sendto(sockfd, b, sizeof(p), 0, (const struct sockaddr *) &serverAddr, sizeof(serverAddr));
+    int count = p->serialize(b, BUFFERSZ);
+    sendto(sockfd, b, count, 0, (const struct sockaddr *) &serverAddr, sizeof(serverAddr));
 }
 
 int ClientSender::sendAck(int noAck) {

@@ -348,8 +348,21 @@ TEST( IntegrationTests, TestServerLoop )
 
 TEST( IntegrationTests, TestClientLoop )
 {
-    Client client(6, "127.0.0.1", TEST_PORT);
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser", "resources/moves.txt",2);
     client.testLoop();
+}
+
+TEST( IntegrationTests, RunClient )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser", "resources/moves.txt",2);
+    client.run();
+}
+
+TEST( IntegrationTests, RunClientSequentially )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser", "resources/moves.txt",2);
+    client.runSequential();
+
 }
  
 int main(int argc, char **argv) {

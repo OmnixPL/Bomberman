@@ -8,14 +8,22 @@
 class Controller
 {
 private:
-    bool isExitRequested;
     std::ifstream inputFile;
     Model * model;
     ClientSender * sender;
+    bool * isExitRequested;
+    int noSeconds;
 public:
-    Controller(std::string filepath, ClientSender * sender, Model * model);
+    Controller(
+        std::string filepath, 
+        ClientSender * sender, 
+        Model * model, 
+        bool * exitPointer,
+        int noSeconds
+    );
     ~Controller();
     void operator()();
+    void runOnce();
 };
 
 #endif // CONTROLLER_H

@@ -1,28 +1,31 @@
 #include "clientReceiver.h"
+#include <view.h>
+#include <thread>
 
-ClientReceiver::ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr) : cliSockfd(ccliSockfd), servaddr(sservaddr) {
-    serverLen = sizeof(servaddr);
+ClientReceiver::ClientReceiver(int& ccliSockfd, sockaddr_in6& sservaddr, bool * exitPointer) : 
+    Receiver(ccliSockfd, sservaddr, exitPointer)
+{
+    typeToBehaviour = {
+        {packet_t::ANS, handlePacketAns},
+        {packet_t::GAME, handlePacketGame},
+        {packet_t::LOBBY,handlePacketLobby},
+        {packet_t::ACK, handlePacketAck}
+    };
 }
 
 ClientReceiver::~ClientReceiver()
 {
 }
 
-// void ClientReceiver::defaultBehaviour(char* buffer, size_t len)
-// {
-//     std::cout<<"I'm inside method defaultBehaviour and I see packet of type "<<Packet::extractType(buffer, len);
-//     isExitRequested = true;
-// }
-
 std::shared_ptr<Packet> ClientReceiver::grabPacket() {
     char buffer[BUFFERSZ];
     int readCount;
     std::shared_ptr<Packet> packet;
 
-    if ( (readCount = recvfrom(cliSockfd, buffer, BUFFERSZ, MSG_DONTWAIT, (struct sockaddr *) &servaddr, &serverLen)) <= 0) {
-        //perror("No packets to read");
+    if ( (readCount = recvfrom(mySockfd, buffer, BUFFERSZ, MSG_DONTWAIT, (struct sockaddr *) &targetAddr, &serverLen)) <= 0) {
         return nullptr;
     }
+    
 
     packet_t type = Packet::extractType(buffer, BUFFERSZ);
     if ( type == ACK ) {
@@ -34,9 +37,12 @@ std::shared_ptr<Packet> ClientReceiver::grabPacket() {
     else if ( type == LOBBY ) {
         packet = std::make_shared<PacketLobby>(buffer, readCount);
     } 
-    // TODO add game
-    else {
-        // TODO ignore?
+    else if ( type == GAME )
+    {
+        packet = std::make_shared<PacketGame>(buffer, readCount);
+    }
+    else 
+    {
         packet = std::make_shared<Packet>(buffer, readCount);
     }
     if (!isPacketOK(packet))
@@ -57,4 +63,70 @@ bool ClientReceiver::isPacketOK(std::shared_ptr<Packet> packet) {
         return false;
 
     return true;
+}
+
+void ClientReceiver::defaultBehaviour(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"I'm inside method defaultBehaviour";
+    *isExitRequested = true;
+}
+
+void ClientReceiver::handlePacketAns(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet ANS\n";
+    std::shared_ptr<PacketAns> packetAns = std::dynamic_pointer_cast<PacketAns>(packet);
+    switch (packetAns->getAns())
+    {
+        case ans_t::OK :
+        {
+            std::cout<<"Properly connected with server\n";
+            break;
+        }
+        case ans_t::BAD_USERNAME :
+        {
+            std::cout<<"Username incorrect\n";
+            break;
+        }
+        case ans_t::BAD_PASSWORD :
+        {
+            std::cout<<"Password incorrect\n";
+            break;
+        }
+        case ans_t::FULL :
+        {
+            std::cout<<"Lobby is full\n";
+            break;
+        }
+        case ans_t::TIMEOUT :
+        {
+            std::cout<<"Timeout\n";
+            break;
+        }    
+        default:
+            std::cout<<"Packet answer incorrect. Ignored\n";
+            break;
+    }
+}
+void ClientReceiver::handlePacketLobby(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet Lobby\n";
+    std::shared_ptr<PacketLobby> packetLobby = std::dynamic_pointer_cast<PacketLobby>(packet);
+    for(int i = 0; i < packetLobby->players.size(); i++)
+    {
+        std::cout<<"Player "<<packetLobby->players[i]<<" "<<(packetLobby->rdy[i] == true ? "READY" : "NOT READY")<<std::endl;;
+    }
+    // LobbyView view(*packetLobby);
+    // std::cout<<view;
+}
+void ClientReceiver::handlePacketGame(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet Game\n";
+    std::shared_ptr<PacketGame> packetGame = std::dynamic_pointer_cast<PacketGame>(packet);
+    GameView view(*packetGame);
+    std::cout<<view;
+}
+void ClientReceiver::handlePacketAck(std::shared_ptr<Packet> packet)
+{
+    std::cout<<"ClientReceiver: Handling packet ACK\n";
+    std::cout<<"Server acknowledged\n";
 }

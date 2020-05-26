@@ -198,6 +198,7 @@ bool PacketAction::getBombPlacement()
     return bombPlacement;
 }
 
+
 PacketGame::PacketGame(field_t (&gamefield)[11][11], std::deque<Bomb>& bombs, Player (&players)[NO_PLAYERS]) : Packet{GAME, ""} {
     // map
     for(int y = 0; y < 11; y++)
@@ -230,7 +231,6 @@ PacketGame::PacketGame(field_t (&gamefield)[11][11], std::deque<Bomb>& bombs, Pl
         isPlayerAlive[i] = players[i].alive;
     }
 }
-
 PacketGame::PacketGame(const std::string user, 
         char map[NO_MAP_FIELDS],
         int bombPos[NO_PLAYERS * NO_BOMBS][2], 
