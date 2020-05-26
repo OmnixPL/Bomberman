@@ -9,12 +9,15 @@
 #include <arpa/inet.h>
 #include <vector>
 #include <queue>
+#include <chrono>
+#include <thread>
 
 #include "session.h"
 #include "lobby.h"
 #include "ServerRecv.h"
 #include "serverSender.h"
 #include "packetContainer.h"
+#include "game.h"
 
 #define SERV_PORT 57312
 #define BUFFERSZ 512
@@ -40,6 +43,7 @@ class Server {
 
     public:
         Server(int port, std::string password = "");
+        void game();
         int testCon();
         void testLoop();
         int selfTest();
