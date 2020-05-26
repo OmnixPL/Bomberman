@@ -55,10 +55,10 @@ void Client::runSequential()
     sender->sendRenew();
     while (!isExitRequested || sender->isQueueNotEmpty())
     {
-        std::cout<<"Tutaj\n";
-        //sender->runOnce();
+        sender->runOnce();
         receiver->runOnce();
-        //controller->runOnce();
+        controller->runOnce();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
     
 }

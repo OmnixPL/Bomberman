@@ -41,7 +41,6 @@ void Receiver::runOnce()
     {
         return;
     }
-    std::cout<<"Receiver running \n";
     std::shared_ptr<Packet> packet = grabPacket();
     if(packet != nullptr)
     {
@@ -55,11 +54,6 @@ void Receiver::runOnce()
         {
             typeToBehaviour[type](packet);
         }
-    }
-    else
-    {
-        std::cout<<"Receiver got nullptr\n";
-    }
-    
+    }    
 
 }
