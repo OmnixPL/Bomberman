@@ -25,6 +25,7 @@ class SessionHandler {
         std::string& password;
     public:
         SessionHandler(std::vector<ClientSession>& ccs, std::string& ppassword) : cs(ccs), password(ppassword) {};
+        
         ans_t addNewClient(sockaddr_in6 addr, PacketAuth& auth);
         int renewClient(sockaddr_in6 addr, Packet& packet);
         int checkTimeouts();

@@ -13,8 +13,6 @@
 #define MAP_SIDE 11
 #define NO_MAP_BYTES 31
 
-// TODO: implement Action, Game
-
 enum packet_t {
     ACK,
     // client to server
@@ -160,8 +158,5 @@ public:
     action_t getAction();
     bool getBombPlacement();
 };
-
-
-
 
 #endif

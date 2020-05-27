@@ -126,7 +126,6 @@ void Server::gameLoop() {
                 packets.pop();
                 std::shared_ptr<PacketAction> act = std::dynamic_pointer_cast<PacketAction>(p.packet);
 
-
                 ClientSession client(p.addr, act->getUser(), 0);
                 int i;
                 for (i = 0; i < MAX_PLAYERS; i++) {
@@ -148,12 +147,15 @@ void Server::gameLoop() {
             }
         }
         game.tick();
+
         std::this_thread::sleep_until(target_time);
         target_time += milliseconds(TICKTIME);
         current_timepoint = clock_type::now(); 
+
         printf("\033c");
         std::cout << "TICK TIME: \t" << std::chrono::duration_cast<std::chrono::milliseconds>(current_timepoint - last_timepoint).count() << std::endl;
         game.printGamefield();
+        
         last_timepoint = current_timepoint;
         sender.sendGameAll(game);
     }

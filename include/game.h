@@ -21,8 +21,6 @@
 
 using namespace std::chrono;
 
-// maybe different enum for every player or none or 
-
 class Pos {
     public:
         float x;
@@ -69,23 +67,20 @@ class Game {
         void stopPlayer(Player& p);
         void movePlayer(Player& p, float moveValue, action_t direction);
         bool canWalkThere(int x, int y, action_t direction);
+        void updatePlayerPosition(int player);
+        void placeBomb(int player, Pos p);
+        void explodeBomb(Bomb b);
     public:
         int playersNo;                    // number of players in game
         Player players[MAX_PLAYERS];
-
-
         field_t gamefield[GFIELDSZ][GFIELDSZ];
         std::deque<Bomb> bombs;
+
         Game(int players);
         void tick();
         bool isInProgress();
-        // make those private after finishing testing
-        void placeBomb(int player, Pos p);
         void placeBomb(int player);
-        void explodeBomb(Bomb b);
-        void explodeBombsTest() { while(!bombs.empty()) { explodeBomb(bombs.front()); bombs.pop_front(); } };
         void updateIntent(int pslayer, action_t action);
-        void updatePlayerPosition(int player);
         void printGamefield();
 };
 

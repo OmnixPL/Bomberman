@@ -9,9 +9,6 @@
 
 #include "receiver.h"
 
-
-//ServerRecv::ServerRecv(int& sservSockfd, char* address, int port, struct timeval timeout) : Receiver(sservSockfd, address, port, timeout){}
-
 ServerRecv::ServerRecv(int& sservSockfd, std::queue<PacketContainer>& ppackets, std::deque<int>& wwaitingForAck, std::vector<ClientSession>& ccs) 
     : servSockfd(sservSockfd), packets(ppackets), waitingForAck(wwaitingForAck), cs(ccs) {}
 
