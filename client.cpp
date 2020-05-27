@@ -14,7 +14,7 @@ void printPacket(std::shared_ptr<Packet> p);
 
 Client::Client(
             int version, 
-            char* addr, 
+            const char* addr, 
             int port, 
             std::string username, 
             std::string pathToMoves,
@@ -30,7 +30,7 @@ Client::Client(
 
     model = new Model(username);
     
-    sender = new ClientSender(cliSockfd, servaddr, queueMutex, &isExitRequested);
+    sender = new ClientSender(cliSockfd, servaddr, &isExitRequested);
     receiver = new ClientReceiver(cliSockfd, servaddr, &isExitRequested);
     controller = new Controller(pathToMoves,sender, model, &isExitRequested, noSecondsBetweenMoves);
 }

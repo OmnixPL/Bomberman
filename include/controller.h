@@ -9,8 +9,8 @@ class Controller
 {
 private:
     std::ifstream inputFile;
-    Model * model;
     ClientSender * sender;
+    Model * model;
     bool * isExitRequested;
     int noSeconds;
 public:

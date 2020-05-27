@@ -22,7 +22,6 @@ class Client {
         int cliSockfd = -1;
         sockaddr_in6 servaddr = {}, cliaddr = {};
         socklen_t len = sizeof(servaddr); // possibly can be deleted?
-        std::mutex queueMutex;
         ClientSender * sender;
         ClientReceiver *  receiver;
         Model * model;
@@ -31,7 +30,7 @@ class Client {
     public:
         Client(
             int version, 
-            char* addr, 
+            const char* addr, 
             int port, 
             std::string username, 
             std::string pathToMoves,

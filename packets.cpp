@@ -213,7 +213,9 @@ PacketGame::PacketGame(field_t (&gamefield)[11][11], std::deque<Bomb>& bombs, Pl
     for(int y = 0; y < 11; y++)
     {
         for(int x = 0; x < 11; x++)
-        mapInfo[y*11+x] = (char)gamefield[x][y];
+        {
+            mapInfo[y*11+x] = (char)gamefield[x][y];
+        }
     }
     // bombs
     unsigned int i;

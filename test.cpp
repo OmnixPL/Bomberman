@@ -180,7 +180,7 @@ TEST( PacketActionTests, SerializePacketAction )
 
 TEST( PacketActionTests, SerializeAndDeserialize )
 {
-    char * buffer = "\5\0\0\0\0\0\0\0testUser\0\2\1";
+    char buffer[] = "\5\0\0\0\0\0\0\0testUser\0\2\1";
 
     PacketAction p(buffer, sizeof(char)*19);
     char buffer2[BUFFERSZ];
@@ -219,23 +219,6 @@ TEST( PacketGameTests, CreatePacket )
     std::string user = "testUser";
     
     PacketGame p(user, map, bombPos, playerPos, playerAlive);
-    int bombPosGot[NO_PLAYERS * NO_BOMBS][2] =
-    {
-        {p.getBombPositionX(0,0), p.getBombPositionY(0,0)},
-        {p.getBombPositionX(0,1), p.getBombPositionY(0,1)},
-        {p.getBombPositionX(1,0), p.getBombPositionY(1,0)},
-        {p.getBombPositionX(1,1), p.getBombPositionY(1,1)},
-        {p.getBombPositionX(2,0), p.getBombPositionY(2,0)},
-        {p.getBombPositionX(2,1), p.getBombPositionY(2,1)},
-        {p.getBombPositionX(3,0), p.getBombPositionY(3,0)},
-        {p.getBombPositionX(3,1), p.getBombPositionY(3,1)}
-    };
-    float playerPosGot[NO_PLAYERS][2] = {
-        {p.getPlayerPosition(0,0),p.getPlayerPosition(0,1)},
-        {p.getPlayerPosition(1,0),p.getPlayerPosition(1,1)},
-        {p.getPlayerPosition(2,0),p.getPlayerPosition(2,1)},
-        {p.getPlayerPosition(3,0),p.getPlayerPosition(3,1)}
-        };
     bool playerAliveGot[] = {
         p.getPlayerAlive(0),
         p.getPlayerAlive(1),
@@ -250,6 +233,12 @@ TEST( PacketGameTests, CreatePacket )
     {
         ASSERT_EQ(bombPos[i][0], p.getBombPositionX(i/2, i%2));
         ASSERT_EQ(bombPos[i][1], p.getBombPositionY(i/2, i%2));
+    }
+
+    for(int i = 0; i < NO_PLAYERS; i++)
+    {
+        ASSERT_EQ(playerPos[i][0], p.getPlayerPosition(i, 0));
+        ASSERT_EQ(playerPos[i][1], p.getPlayerPosition(i, 1));
     }
 
     for(int i = 0; i < NO_MAP_FIELDS; i++)
@@ -288,7 +277,7 @@ TEST( PacketGameTests, SerializePacket)
     
     PacketGame p(user, map, bombPos, playerPos, playerAlive);
     char buffer[BUFFERSZ];
-    int offset = p.serialize(buffer, BUFFERSZ);
+    p.serialize(buffer, BUFFERSZ);
 
     for(int i = 17; i < 17+NO_MAP_BYTES-1; i++)
     {

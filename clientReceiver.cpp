@@ -110,12 +110,10 @@ void ClientReceiver::handlePacketLobby(std::shared_ptr<Packet> packet)
 {
     std::cout<<"ClientReceiver: Handling packet Lobby\n";
     std::shared_ptr<PacketLobby> packetLobby = std::dynamic_pointer_cast<PacketLobby>(packet);
-    for(int i = 0; i < packetLobby->players.size(); i++)
+    for(size_t i = 0; i < packetLobby->players.size(); i++)
     {
         std::cout<<"Player "<<packetLobby->players[i]<<" "<<(packetLobby->rdy[i] == true ? "READY" : "NOT READY")<<std::endl;;
     }
-    // LobbyView view(*packetLobby);
-    // std::cout<<view;
 }
 void ClientReceiver::handlePacketGame(std::shared_ptr<Packet> packet)
 {

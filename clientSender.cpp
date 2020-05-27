@@ -3,10 +3,9 @@
 #include <condition_variable>
 #include <mutex>
 
-ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr, std::mutex &mutex, bool * exitPointer) : 
+ClientSender::ClientSender(int& ssockfd, sockaddr_in6& sserverAddr, bool * exitPointer) : 
     sockfd(ssockfd), 
     serverAddr(sserverAddr),
-    queueMutex(&mutex),
     isExitRequested(exitPointer)
 {
     serverLen = sizeof(serverAddr);
@@ -55,10 +54,6 @@ bool ClientSender::isQueueNotEmpty()
 
 std::shared_ptr<Packet> ClientSender::popFromQueue()
 {
-    std::unique_lock<std::mutex> lck(*queueMutex);
-    // wait until queue is not empty
-    condVar.wait_for(lck, std::chrono::seconds(5), std::bind(&ClientSender::isQueueNotEmpty, this));
-    // only in case of exit request
     if(packets.empty())
         return nullptr;
     std::shared_ptr<Packet> result = packets.front();
@@ -67,9 +62,7 @@ std::shared_ptr<Packet> ClientSender::popFromQueue()
 }
 void ClientSender::addToQueue(std::shared_ptr<Packet> p)
 {
-    std::lock_guard<std::mutex>(*queueMutex);
     packets.push(p);
-    condVar.notify_one();
 }
 
 void ClientSender::sendToServer(std::shared_ptr<Packet> p)
