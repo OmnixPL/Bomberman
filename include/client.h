@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <stdio.h>
 #include <stdlib.h> // EXIT_FAILURE
 #include <string>

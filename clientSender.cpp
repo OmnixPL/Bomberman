@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <clientSender.h>
 #include <client.h>
 #include <condition_variable>

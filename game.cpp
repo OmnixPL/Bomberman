@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "include/game.h"
 
 Game::Game(int pplayers) : playersNo(pplayers) {

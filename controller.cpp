@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <controller.h>
 #include <iostream>
 #include <packets.h>

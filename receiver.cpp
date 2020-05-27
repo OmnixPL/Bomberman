@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <map>
 #include <iostream>
 #include "packets.h"

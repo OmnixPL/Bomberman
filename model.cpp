@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <model.h>
 
 Model::Model(std::string username) : username(username)

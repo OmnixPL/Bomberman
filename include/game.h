@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef GAME_H
 #define GAME_H
 

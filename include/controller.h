@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 

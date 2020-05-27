@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "packets.h"
 #include <iostream>
 #include <cstring>

@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef PACKETS_H
 #define PACKETS_H
 

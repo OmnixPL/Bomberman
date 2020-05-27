@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "lobby.h"
 
 int Lobby::clientReady(sockaddr_in6 addr, PacketRdy& rdy) {

@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <view.h>
 
 std::ostream & operator<<(std::ostream &out, const GameView &s)

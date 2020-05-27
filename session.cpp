@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "session.h"
 
 ans_t SessionHandler::addNewClient(sockaddr_in6 addr, PacketAuth& auth) {

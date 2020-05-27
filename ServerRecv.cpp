@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "include/ServerRecv.h"
 #include <sys/socket.h>
 #include <netdb.h>

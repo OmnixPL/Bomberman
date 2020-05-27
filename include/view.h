@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef VIEW_H
 #define VIEW_H
 

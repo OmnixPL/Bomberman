@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef RECEIVER_H
 #define RECEIVER_H
 #include <map>

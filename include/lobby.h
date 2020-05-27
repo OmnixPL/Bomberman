@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <vector>
 #include <session.h>
 

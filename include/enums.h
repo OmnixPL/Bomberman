@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef ENUMS_H
 #define ENUMS_H
 

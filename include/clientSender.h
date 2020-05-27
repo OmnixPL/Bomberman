@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef CLIENT_SENDER_H
 #define CLIENT_SENDER_H
 

@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #ifndef CLIENTSESSION_H
 #define CLIENTSESSION_H
 

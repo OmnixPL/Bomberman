@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include <iostream>
 #include <queue>
 #include <memory>

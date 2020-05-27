@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "include/server.h"
 #include "include/packets.h"
 

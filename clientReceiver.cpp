@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "clientReceiver.h"
 #include <view.h>
 #include <thread>

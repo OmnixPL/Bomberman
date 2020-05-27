@@ -1,3 +1,5 @@
+// Szymon Malolepszy
+// Kacper Kula
 #include "include/serverSender.h"
 
 ServerSender::ServerSender(int& sservSockfd, std::vector<ClientSession>& ccs) : servSockfd(sservSockfd), cs(ccs) {}
