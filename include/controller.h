@@ -22,8 +22,8 @@ public:
         int noSeconds
     );
     ~Controller();
-    void operator()();
     void runOnce();
+    int getNoSeconds();
 };
 
 #endif // CONTROLLER_H
