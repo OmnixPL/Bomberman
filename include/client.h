@@ -36,15 +36,5 @@ class Client {
             std::string username, 
             std::string pathToMoves,
             int noSecondsBetweenMoves);
-        int test();
-        void testSender();
-        void testLoop();
-        void run();
         void runSequential();
-        // void test2();
-        // void test3();
-        // void test4();
-        // void test5();
 };
-
-int client(char *ipVersion, char *addr, char *port);
