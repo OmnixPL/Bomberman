@@ -106,51 +106,61 @@ void Server::gameLoop() {
     auto last_timepoint = clock_type::now(); 
     auto current_timepoint = clock_type::now(); 
     auto target_time = clock_type::now(); 
+
+    // repurpose last active into latest packet counter
+    for (unsigned int i = 0; i < cs.size(); i++ ) {
+        cs[i].lastActive = 0;
+    }
+
     // main game loop
     while (game.isInProgress()) {
-        target_time += milliseconds(TICKTIME);
         // grab all packets
         while (true) {
             receiver.grabPacket();
-            if (!packets.empty()) {
-                type = packets.front().packet->getType();
-                if (type == ACTION) {
-                    PacketContainer p = std::move(packets.front());
-                    packets.pop();
-                    std::shared_ptr<PacketAction> act = std::dynamic_pointer_cast<PacketAction>(p.packet);
+            if (packets.empty()) {
+                break;
+            }
+            type = packets.front().packet->getType();
+            if (type == ACTION) {
+                PacketContainer p = std::move(packets.front());
+                packets.pop();
+                std::shared_ptr<PacketAction> act = std::dynamic_pointer_cast<PacketAction>(p.packet);
 
 
-                    ClientSession client(p.addr, act->getUser(), 0);
-                    int i;
-                    for (i = 0; i < MAX_PLAYERS; i++) {
-                        if (cs[i] == client)
-                            break;
-                    }
-
-                    if (i != MAX_PLAYERS && act->getNo() > cs[i].lastActive) {
-                        if (act->getBombPlacement() == true)
-                            game.placeBomb(i);
-
-                        game.updateIntent(i, act->getAction());
-
-                        cs[i].lastActive = act->getNo();
-                    }
+                ClientSession client(p.addr, act->getUser(), 0);
+                int i;
+                for (i = 0; i < MAX_PLAYERS; i++) {
+                    if (cs[i] == client)
+                        break;
                 }
-                else {
-                    packets.pop();
+
+                if (i != MAX_PLAYERS && act->getNo() > cs[i].lastActive) {
+                    if (act->getBombPlacement() == true)
+                        game.placeBomb(i);
+
+                    game.updateIntent(i, act->getAction());
+
+                    cs[i].lastActive = act->getNo();
                 }
             }
-
-            game.tick();
-            std::this_thread::sleep_until(target_time);
-            target_time += milliseconds(TICKTIME);
-            current_timepoint = clock_type::now(); 
-            printf("\033c");
-            std::cout << "TICK TIME: \t" << std::chrono::duration_cast<std::chrono::milliseconds>(current_timepoint - last_timepoint).count() << std::endl;
-            game.printGamefield();
-            last_timepoint = current_timepoint;
-            sender.sendGameAll(game);
+            else {
+                packets.pop();
+            }
         }
+        game.tick();
+        std::this_thread::sleep_until(target_time);
+        target_time += milliseconds(TICKTIME);
+        current_timepoint = clock_type::now(); 
+        printf("\033c");
+        std::cout << "TICK TIME: \t" << std::chrono::duration_cast<std::chrono::milliseconds>(current_timepoint - last_timepoint).count() << std::endl;
+        game.printGamefield();
+        last_timepoint = current_timepoint;
+        sender.sendGameAll(game);
+    }
+
+    // set last active back into time counter (otherwise lobby will kick all players)
+    for (unsigned int i = 0; i < cs.size(); i++ ) {
+        cs[i].lastActive = time(NULL);
     }
 }
 
