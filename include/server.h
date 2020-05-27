@@ -47,10 +47,5 @@ class Server {
     public:
         Server(int port, std::string password = "");
         void start() { lobbyLoop(); };
-        int testCon();
-        void testLoop();
-        int selfTest();
-        // void test2();
-        void test3();
 };
 
