@@ -35,17 +35,6 @@ Client::Client(
     controller = new Controller(pathToMoves,sender, model, &isExitRequested, noSecondsBetweenMoves);
 }
 
-void Client::run()
-{
-    std::thread receiverThread(&ClientReceiver::operator(), receiver);
-    // std::thread senderThread(&ClientSender::operator(), sender);
-    // std::thread controllerThread(&Controller::operator(), controller);
-    // senderThread.join();
-    receiverThread.join();
-    // controllerThread.join();
-    
-}
-
 void Client::runSequential()
 {   
     auto last_timepoint = clock_type::now();
@@ -55,7 +44,7 @@ void Client::runSequential()
         sender->runOnce();
         receiver->runOnce();
         current_timepoint = clock_type::now();
-        if(current_timepoint - last_timepoint >= std::chrono::seconds(controller->getNoSeconds()))
+        if(current_timepoint - last_timepoint >= std::chrono::milliseconds(controller->getNoSeconds()))
         {
             std::cout<<"Controller running\n";
             controller->runOnce();
@@ -164,42 +153,6 @@ void Client::testLoop() {
     return;
 }
 
-// ********************************** OLD TESTS ***********************
-
-// void Client::test2()
-// {
-//     std::cout<<"Client performing test 2"<<std::endl;
-//     (*receiver)();
-// }
-
-// void Client::test3()
-// {
-//     int readCount;
-//     char buffer[BUFFERSZ];
-//     char msg[] = "Dzien dobry.";
-//     std::string pass = "Pap";
-//     sendto(cliSockfd, (const char *)msg, strlen(msg), 0, (const struct sockaddr *) &servaddr, len); 
-//     printf("Hello message sent.\n");
-//     (*receiver)();
-    
-// }
-
-// void Client::test4()
-// {
-//     (*sender)();
-//     // receiver->serve();
-// }
-
-// void Client::test5()
-// {
-//     std::thread threadObj( *sender );
-//     std::thread receiverThread( *receiver );
-//     threadObj.join();
-//     receiverThread.join();
-// }
-
-
-// use with testCon in server (outdated)
 int Client::test() {
     int readCount;
     char buffer[BUFFERSZ];
