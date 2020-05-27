@@ -23,7 +23,6 @@ protected:
 public:
     Receiver(int& cliSockfd, sockaddr_in6& servaddr, bool * exitPointer);
     
-    void operator()();
     void runOnce();
     virtual ~Receiver();
 };
