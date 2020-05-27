@@ -48,6 +48,16 @@ GameView::GameView(PacketGame p)
         fields[i/MAP_SIDE][i % MAP_SIDE] = result;
     }
 
+    for(int i = 0; i < NO_PLAYERS; i++ )
+    {
+        if(p.getPlayerAlive(i))
+        {
+            int x = p.getPlayerPosition(i, 0);
+            int y = p.getPlayerPosition(i, 1);
+            fields[x][y] = '0' + i;
+        }
+    }
+
     for (size_t i = 0; i < NO_PLAYERS; i++)
     {
         int x = p.getBombPositionX(i, 0);
@@ -64,13 +74,5 @@ GameView::GameView(PacketGame p)
         }
     }
 
-    for(int i = 0; i < NO_PLAYERS; i++ )
-    {
-        if(p.getPlayerAlive(i))
-        {
-            int x = p.getPlayerPosition(i, 0);
-            int y = p.getPlayerPosition(i, 1);
-            fields[x][y] = '0' + i;
-        }
-    }
+    
 }

@@ -13,28 +13,6 @@ Receiver::Receiver(int& cliSockfd, sockaddr_in6& servaddr, bool * exitPointer) :
 
 Receiver::~Receiver(){std::cout<<"Destroying receiver object";};
 
-void Receiver::operator()()
-{
-    while (!(*isExitRequested))
-    {
-        std::shared_ptr<Packet> packet = grabPacket();
-        if(packet != nullptr)
-        {
-            packet_t type = packet->getType();
-            // no behaviour for such type
-            if(typeToBehaviour.find(type) == typeToBehaviour.end())
-            {
-                defaultBehaviour(packet);
-            }
-            else
-            {
-                typeToBehaviour[type](packet);
-            }
-        }        
-        
-    }
-}
-
 void Receiver::runOnce()
 {
     if(*isExitRequested)
