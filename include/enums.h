@@ -9,6 +9,6 @@ enum action_t {
     RIGHT
 };
 
-enum field_t {EMPTY, SOFT_WALL, HARD_WALL, BOMB, PLAYER};
+enum field_t {EMPTY, SOFT_WALL, HARD_WALL, BOMB};
 
 #endif

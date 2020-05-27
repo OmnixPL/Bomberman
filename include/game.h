@@ -54,8 +54,9 @@ class Bomb {
     public:
         int x;
         int y;
+        int player;
         time_point<system_clock> time;
-        Bomb(int xx, int yy) : x(xx), y(yy) { time = system_clock::now() + seconds(SECONDS_TO_EXPLODE); }
+        Bomb(int xx, int yy, int pplayer) : x(xx), y(yy), player(pplayer) { time = system_clock::now() + seconds(SECONDS_TO_EXPLODE); }
 };
 
 class Game {

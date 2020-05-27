@@ -101,30 +101,34 @@ void Game::printGamefield() {
         std::cout << "\tPos: " << p.pos.x << ", " << p.pos.y << std::endl;
         std::cout << "\tD: " << p.direction << " ND: " << p.nextDirection << " ToMove: " << p.toMove << std::endl;
     }
-    std::cout << std::endl;
+    char b[132];
+    // byte char
     for (int y = 0; y < GFIELDSZ; y++) {
         for (int x = 0; x < GFIELDSZ; x++) {
             switch ( gamefield[x][y] )
             {
                 case EMPTY:
-                    std::cout << ".";
+                    b[y*12+x] = '.';
                     break;
                 case SOFT_WALL:
-                    std::cout << "!";
+                    b[y*12+x] = '!';
                     break;
                 case HARD_WALL:
-                    std::cout << "#";
+                    b[y*12+x] = '#';
                     break;
                 case BOMB:
-                    std::cout << "O";
-                    break;
-                case PLAYER:    // would rather avoid this because can overwrite bomb position
-                    std::cout << "+";
+                    b[y*12+x] = 'o';
                     break;
             }
         }
-        std::cout << std::endl;
+        b[y*12+11] = '\n';
     }
+    b[131] = 0;
+    for (int i = 0; i < playersNo; i++) {
+        if (!players[i].alive) continue;
+        b[((int)players[i].pos.y)*12 + ((int)players[i].pos.x)] = '0' + i;
+    }
+    std::cout << b << std::endl;
 }
 
 void Game::placeBomb(int player) {
@@ -137,7 +141,7 @@ void Game::placeBomb(int player, Pos p) {
 
     gamefield[(int)p.x][(int)p.y] = BOMB;
     players[player].bombsPlaced++;
-    bombs.push_back(Bomb(p.x, p.y));
+    bombs.push_back(Bomb(p.x, p.y, player));
     return;
 }
 
@@ -148,7 +152,7 @@ void Game::explodeBomb(Bomb b) {
     int downY;
 
     gamefield[b.x][b.y] = EMPTY;
-
+    players[b.player].bombsPlaced--;
     // check walls to destroy (and stop on them)
     for ( leftX = b.x - 1; leftX >= b.x - 3; leftX--) {
         if ( leftX < 0 )
@@ -332,7 +336,7 @@ void Game::updateIntent(int player, action_t action) {
 
 bool Game::canWalkThere(int x, int y, action_t direction) {
     if (direction == LEFT) {
-        if (x == 0)
+        if (x-- == 0)
             return true;
     }
     else if (direction == RIGHT) {
@@ -340,7 +344,7 @@ bool Game::canWalkThere(int x, int y, action_t direction) {
             return true;
     }
     else if (direction == UP) {
-        if (y == 0)
+        if (y-- == 0)
             return true;
     }
     else if (direction == DOWN) {
