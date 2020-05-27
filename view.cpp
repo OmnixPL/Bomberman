@@ -7,9 +7,9 @@ std::ostream & operator<<(std::ostream &out, const GameView &s)
     {
         for(int j = 0; j < MAP_SIDE; j++)
         {
-            out<<s.fields[i][j]<<" ";
+            out<<s.fields[j][i];
         }
-        out<<"\n\n";
+        out<<"\n";
     }
     return out;
 }
@@ -45,7 +45,7 @@ GameView::GameView(PacketGame p)
             default:
                 break;
         }
-        fields[i/MAP_SIDE][i % MAP_SIDE] = result;
+        fields[i%MAP_SIDE][i / MAP_SIDE] = result;
     }
 
     for(int i = 0; i < NO_PLAYERS; i++ )
@@ -54,7 +54,7 @@ GameView::GameView(PacketGame p)
         {
             int x = p.getPlayerPosition(i, 0);
             int y = p.getPlayerPosition(i, 1);
-            fields[x][y] = '0' + i;
+            fields[x][y] = '1' + i;
         }
     }
 
