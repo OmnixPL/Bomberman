@@ -22,7 +22,6 @@ public:
         int noSeconds
     );
     ~Controller();
-    void operator()();
     void runOnce();
     int getNoSeconds();
 };

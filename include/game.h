@@ -11,7 +11,7 @@
 #define MAX_PLAYERS 4
 #define BOMBS 2
 
-#define TICKS 50 // ticks in second
+#define TICKS 20 // ticks in second
 #define TICKTIME 1000/TICKS // length of tick in milliseconds
 
 #define BLOCKS_PER_SECOND 2.0 // how fast player moves
@@ -43,7 +43,6 @@ class Player {
         action_t nextDirection;
 
         Player() {
-
             alive = false;
             bombsPlaced = 0;
             walking = false;
