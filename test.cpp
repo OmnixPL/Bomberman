@@ -352,17 +352,45 @@ TEST( IntegrationTests, TestClientLoop )
     client.testLoop();
 }
 
-TEST( IntegrationTests, RunClient )
+TEST( IntegrationTests, RunServer )
 {
-    Client client(6, "127.0.0.1", TEST_PORT, "testUser", "resources/moves.txt",2);
-    client.run();
+    Server server(TEST_PORT, "Haselko");
+    server.testLoop();
 }
 
 TEST( IntegrationTests, RunClientSequentially )
 {
     Client client(6, "127.0.0.1", TEST_PORT, "testUser", "resources/moves.txt",2);
     client.runSequential();
+}
 
+TEST( IntegrationTests, TestCase1 )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser1", "resources/test1.txt",2);
+    client.runSequential();
+}
+
+TEST( IntegrationTests, TestCase2 )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser2", "resources/test2.txt",2);
+    client.runSequential();
+}
+
+TEST( IntegrationTests, TestCase3 )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser3", "resources/test3.txt",2);
+    client.runSequential();
+}
+TEST( IntegrationTests, TestCase4 )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser4", "resources/test4.txt",2);
+    client.runSequential();
+}
+
+TEST( IntegrationTests, TestCase5 )
+{
+    Client client(6, "127.0.0.1", TEST_PORT, "testUser5", "resources/test5.txt",2);
+    client.runSequential();
 }
  
 int main(int argc, char **argv) {

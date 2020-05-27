@@ -26,7 +26,6 @@ std::shared_ptr<Packet> ClientReceiver::grabPacket() {
         return nullptr;
     }
     
-
     packet_t type = Packet::extractType(buffer, BUFFERSZ);
     if ( type == ACK ) {
         packet = std::make_shared<PacketAck>(buffer, readCount);
@@ -120,7 +119,7 @@ void ClientReceiver::handlePacketLobby(std::shared_ptr<Packet> packet)
 }
 void ClientReceiver::handlePacketGame(std::shared_ptr<Packet> packet)
 {
-    std::cout<<"ClientReceiver: Handling packet Game\n";
+    std::cout<<"ClientReceiver: Handling packet Game no "<<packet->getNo()<<std::endl;
     std::shared_ptr<PacketGame> packetGame = std::dynamic_pointer_cast<PacketGame>(packet);
     GameView view(*packetGame);
     std::cout<<view;
