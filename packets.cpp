@@ -188,9 +188,15 @@ PacketAction::PacketAction(char* buffer, size_t len) : Packet(buffer, len)
     memcpy(static_cast<action_t*>(&actionInBuffer), buffer + offset,  sizeof(char));
     offset += sizeof(char);
     memcpy(static_cast<bool*>(&bombPlacement), buffer+offset, sizeof(char));
+    this->action = actionInBuffer;
+    this->bombPlacement = bombPlacement;
+    std::cout<<"Action: "<<action<<" bomb placed: "<<bombPlacement<<std::endl;
 }
 
-PacketAction::PacketAction(const std::string user, action_t action, bool bombPlacement) : Packet(packet_t::ACTION, user), action(action), bombPlacement(bombPlacement){}
+PacketAction::PacketAction(const std::string user, action_t action, bool bombPlacement) : Packet(packet_t::ACTION, user), action(action), bombPlacement(bombPlacement)
+{
+    std::cout<<"Action: "<<action<<" bomb placed: "<<bombPlacement<<std::endl;
+}
 
 action_t PacketAction::getAction()
 {

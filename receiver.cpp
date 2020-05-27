@@ -42,7 +42,7 @@ void Receiver::runOnce()
         return;
     }
     std::shared_ptr<Packet> packet = grabPacket();
-    if(packet != nullptr)
+    while (packet != nullptr)
     {
         packet_t type = packet->getType();
         // no behaviour for such type
@@ -54,6 +54,6 @@ void Receiver::runOnce()
         {
             typeToBehaviour[type](packet);
         }
-    }    
-
+        packet = grabPacket();
+    }
 }

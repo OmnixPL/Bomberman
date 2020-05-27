@@ -1,23 +1,5 @@
 #include <view.h>
 
-std::ostream & operator<<(std::ostream &out, const LobbyView &s)
-{
-    out<<"Lobby looks as follows:\n";
-    for(int i = 0; i < NO_PLAYERS; i++)
-    {
-        out<<"Player: "<<s.players[i]<<" "<<(s.playerRdy[i] == true ? "READY": "NOT READY")<<std::endl;
-    }
-}
-
-LobbyView::LobbyView(PacketLobby p) 
-{
-    for(int i = 0; i < NO_PLAYERS; i++)
-    {
-        this->players[i] = p.players[i];
-        this->playerRdy[i] = p.rdy[i];
-    }
-}
-
 std::ostream & operator<<(std::ostream &out, const GameView &s)
 {
     out<<"Game map looks as follows:\n";
